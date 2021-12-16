@@ -5,7 +5,7 @@ class DummyAgent(agent.Agent):
         print("Hello World! I'm agent {}".format(str(self.jid)))
 
 dummy = DummyAgent("test@localhost", "1qaz@WSX", False)
-future = dummy.start()
+future = dummy.start(True)
 future.result()
 
 dummy.stop()
