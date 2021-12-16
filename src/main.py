@@ -1,12 +1,64 @@
-from spade import agent, quit_spade
+import time
+from spade.agent import Agent
+from spade.behaviour import OneShotBehaviour
+from spade.message import Message
+from spade.template import Template
 
-class DummyAgent(agent.Agent):
+
+class SenderAgent(Agent):
+    class InformBehav(OneShotBehaviour):
+        async def run(self):
+            print("InformBehav running")
+            msg = Message(to="receiver@localhost")     # Instantiate the message
+            msg.set_metadata("performative", "inform")  # Set the "inform" FIPA performative
+            msg.body = "Hello World"                    # Set the message content
+
+            await self.send(msg)
+            print("Message sent!")
+
+            # stop agent from behaviour
+            await self.agent.stop()
+
     async def setup(self):
-        print("Hello World! I'm agent {}".format(str(self.jid)))
+        print("SenderAgent started")
+        b = self.InformBehav()
+        self.add_behaviour(b)
 
-dummy = DummyAgent("test@localhost", "1qaz@WSX", False)
-future = dummy.start(True)
-future.result()
+class ReceiverAgent(Agent):
+    class RecvBehav(OneShotBehaviour):
+        async def run(self):
+            print("RecvBehav running")
 
-dummy.stop()
-quit_spade()
+            msg = await self.receive(timeout=20) # wait for a message for 10 seconds
+            if msg:
+                print("Message received with content: {}".format(msg.body))
+            else:
+                print("Did not received any message after 10 seconds")
+
+            # stop agent from behaviour
+            await self.agent.stop()
+
+    async def setup(self):
+        print("ReceiverAgent started")
+        b = self.RecvBehav()
+        template = Template()
+        template.set_metadata("performative", "inform")
+        self.add_behaviour(b, template)
+
+
+
+if __name__ == "__main__":
+    receiveragent = ReceiverAgent("receiver@localhost", "1qaz@WSX")
+    future = receiveragent.start()
+    future.result() # wait for receiver agent to be prepared.
+    senderagent = SenderAgent("sender@localhost", "1qaz@WSX")
+    senderagent.start()
+
+    while receiveragent.is_alive():
+        try:
+            time.sleep(1)
+        except KeyboardInterrupt:
+            senderagent.stop()
+            receiveragent.stop()
+            break
+    print("Agents finished")
