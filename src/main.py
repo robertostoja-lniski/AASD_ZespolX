@@ -4,6 +4,14 @@ from spade.behaviour import OneShotBehaviour
 from spade.message import Message
 from spade.template import Template
 
+from src.agents.client_reporter import *
+from src.agents.crowd_monitoring import CrowdMonitoring
+from src.agents.data_accumulator import DataAccumulator
+from src.agents.fish_content_monitoring import FishContentMonitoring
+from src.agents.fishery_recommender import FisheryRecommender
+from src.agents.water_monitoring import WaterMonitoring
+from src.agents.weather_monitoring import WeatherMonitoring
+
 
 class SenderAgent(Agent):
     class InformBehav(OneShotBehaviour):
@@ -48,17 +56,12 @@ class ReceiverAgent(Agent):
 
 
 if __name__ == "__main__":
-    receiveragent = ReceiverAgent("receiver@localhost", "1qaz@WSX")
-    future = receiveragent.start()
-    future.result() # wait for receiver agent to be prepared.
-    senderagent = SenderAgent("sender@localhost", "1qaz@WSX")
-    senderagent.start()
 
-    while receiveragent.is_alive():
-        try:
-            time.sleep(1)
-        except KeyboardInterrupt:
-            senderagent.stop()
-            receiveragent.stop()
-            break
-    print("Agents finished")
+    water_monitoring = WaterMonitoring('water_monitoring', '1qaz@WSX')
+    fish_content_monitoring = FishContentMonitoring('fish_content_monitoring', '1qaz@WSX')
+    weather_monitoring = WeatherMonitoring('weather_monitoring', '1qaz@WSX')
+    crowd_monitoring = CrowdMonitoring('crowd_monitoring', '1qaz@WSX')
+    data_accumulator = DataAccumulator('data_accumulator', '1qaz@WSX')
+    fishery_reccomender = FisheryRecommender('fishery_reccomender', '1qaz@WSX')
+    client_reporter = ClientReporter('client_reporter', '1qaz@WSX')
+
