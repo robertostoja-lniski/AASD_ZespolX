@@ -3,6 +3,7 @@ from spade.agent import Agent
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
 from spade.template import Template
+import keyboard
 
 from src.agents.client_reporter import *
 from src.agents.crowd_monitoring import CrowdMonitoring
@@ -11,6 +12,7 @@ from src.agents.fish_content_monitoring import FishContentMonitoring
 from src.agents.fishery_recommender import FisheryRecommender
 from src.agents.water_monitoring import WaterMonitoring
 from src.agents.weather_monitoring import WeatherMonitoring
+from src.mas_logging import create_logger
 
 
 class SenderAgent(Agent):
@@ -56,12 +58,37 @@ class ReceiverAgent(Agent):
 
 
 if __name__ == "__main__":
+    agents = []
+    logger = create_logger('main')
+    logger.info('How to use: \n f - generate fishery reccomendation\n r - generate report\n q - quit\n')
+    logger.info('initializing agents')
+    agents.append(WaterMonitoring('water_monitoring@localhost', '1qaz@WSX'))
+    agents.append(FishContentMonitoring('fish_content_monitoring@localhost', '1qaz@WSX'))
+    agents.append(WeatherMonitoring('weather_monitoring@localhost', '1qaz@WSX'))
+    agents.append(CrowdMonitoring('crowd_monitoring@localhost', '1qaz@WSX'))
+    agents.append(DataAccumulator('data_accumulator@localhost', '1qaz@WSX'))
+    agents.append(FisheryRecommender('fishery_recommender@localhost', '1qaz@WSX'))
+    agents.append(ClientReporter('client_reporter@localhost', '1qaz@WSX'))
+    for agent in agents:
+        future = agent.start()
 
-    water_monitoring = WaterMonitoring('water_monitoring', '1qaz@WSX')
-    fish_content_monitoring = FishContentMonitoring('fish_content_monitoring', '1qaz@WSX')
-    weather_monitoring = WeatherMonitoring('weather_monitoring', '1qaz@WSX')
-    crowd_monitoring = CrowdMonitoring('crowd_monitoring', '1qaz@WSX')
-    data_accumulator = DataAccumulator('data_accumulator', '1qaz@WSX')
-    fishery_reccomender = FisheryRecommender('fishery_reccomender', '1qaz@WSX')
-    client_reporter = ClientReporter('client_reporter', '1qaz@WSX')
+    while True:
+        if keyboard.is_pressed('q'):
+            logger.info('q key has been pressed, stopping program')
+            for agent in agents:
+                future = agent.stop()
+            break
+        elif keyboard.is_pressed('f'):
+            logger.info('f key has been pressed, generating recommendation')
+
+            # send message to fishery recommender
+            pass
+        elif keyboard.is_pressed('r'):
+            logger.info('r key has been pressed, generating report')
+
+            # send message to client reporter
+            pass
+        else:
+            pass
+
 
