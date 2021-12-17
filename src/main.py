@@ -80,13 +80,13 @@ if __name__ == "__main__":
             break
         elif keyboard.is_pressed('f'):
             logger.info('f key has been pressed, generating recommendation')
-
-            # send message to fishery recommender
+            time.sleep(1)
+            # send message to fishery recommender and print recommendation
             pass
         elif keyboard.is_pressed('r'):
             logger.info('r key has been pressed, generating report')
-
-            # send message to client reporter
+            time.sleep(1)
+            # send message to client reporter and print report
             pass
         else:
             pass
