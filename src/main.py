@@ -1,52 +1,38 @@
-import time
-from spade.agent import Agent
-from spade.behaviour import OneShotBehaviour
-from spade.message import Message
-from spade.template import Template
+from spade import quit_spade
 import keyboard
-
 from src.agents.client_reporter import *
 from src.agents.crowd_monitoring import CrowdMonitoring
 from src.agents.data_accumulator import DataAccumulator
 from src.agents.fish_content_monitoring import FishContentMonitoring
 from src.agents.fishery_recommender import FisheryRecommender
+from src.agents.user import User
 from src.agents.water_monitoring import WaterMonitoring
 from src.agents.weather_monitoring import WeatherMonitoring
 from src.mas_logging import create_logger
 
-
 if __name__ == "__main__":
     agents = []
     logger = create_logger('main')
-    logger.info('How to use: \n f - generate fishery reccomendation\n r - generate report\n q - quit\n')
+    logger.info('How to use: \n press f - generate fishery reccomendation\n press r - generate report\n input q - quit\n')
     logger.info('initializing agents')
-    agents.append(WaterMonitoring('water_monitoring@localhost', '1qaz@WSX'))
-    agents.append(FishContentMonitoring('fish_content_monitoring@localhost', '1qaz@WSX'))
-    agents.append(WeatherMonitoring('weather_monitoring@localhost', '1qaz@WSX'))
-    agents.append(CrowdMonitoring('crowd_monitoring@localhost', '1qaz@WSX'))
-    agents.append(DataAccumulator('data_accumulator@localhost', '1qaz@WSX'))
-    agents.append(FisheryRecommender('fishery_recommender@localhost', '1qaz@WSX'))
-    agents.append(ClientReporter('client_reporter@localhost', '1qaz@WSX'))
+    agents.append(WaterMonitoring(spec.water_monitoring, spec.password))
+    agents.append(FishContentMonitoring(spec.fish_content_monitoring, spec.password))
+    agents.append(WeatherMonitoring(spec.weather_monitoring, spec.password))
+    agents.append(CrowdMonitoring(spec.crowd_monitoring, spec.password))
+    agents.append(DataAccumulator(spec.data_accumulator, spec.password))
+    agents.append(FisheryRecommender(spec.fishery_recommender, spec.password))
+    agents.append(ClientReporter(spec.client_reporter, spec.password))
+    agents.append(User(spec.user, spec.password))
+
+    port = 10001
     for agent in agents:
         future = agent.start()
+        agent.web.start(hostname="127.0.0.1", port=port)
+        port += 1
 
     while True:
-        if keyboard.is_pressed('q'):
-            logger.info('q key has been pressed, stopping program')
-            for agent in agents:
-                future = agent.stop()
-            break
-        elif keyboard.is_pressed('f'):
-            logger.info('f key has been pressed, generating recommendation')
-            time.sleep(1)
-            # send message to fishery recommender and print recommendation
-            pass
-        elif keyboard.is_pressed('r'):
-            logger.info('r key has been pressed, generating report')
-            time.sleep(1)
-            # send message to client reporter and print report
-            pass
-        else:
-            pass
-
-
+        key = input()
+        if key == 'q':
+            logger.info('q key has been recognized, stopping program')
+            quit_spade()
+        break

@@ -1,26 +1,36 @@
 import asyncio
+from datetime import datetime
 
 import keyboard
-from spade.behaviour import CyclicBehaviour
+from spade.behaviour import CyclicBehaviour, PeriodicBehaviour
 
+from src import spec
 from src.agents.base_agent import BaseAgent
 
 
-class UserAgent(BaseAgent):
-    class UserBehaviour(CyclicBehaviour):
+def quit_spade():
+    pass
+
+
+class User(BaseAgent):
+    class Behaviour(CyclicBehaviour):
         async def run(self):
             if keyboard.is_pressed('f'):
-                self.logger.info('f key has been pressed, generating recommendation')
+                self.agent.logger.info('f key has been pressed, generating recommendation')
                 await asyncio.sleep(1)
                 # send message to fishery recommender and print recommendation
                 return
             elif keyboard.is_pressed('r'):
-                self.logger.info('r key has been pressed, generating report')
+                self.agent.logger.info('r key has been pressed, generating report')
                 await asyncio.sleep(1)
                 # send message to client reporter and print report
                 return
 
+            await asyncio.sleep(0.1)
+
     async def setup(self):
-        super().setup()
-        b = self.UserBehaviour()
-        self.add_behaviour(b)
+        self.agents_to_subscribe = []
+        await super().setup()
+
+
+
