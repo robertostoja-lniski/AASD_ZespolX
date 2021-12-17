@@ -1,3 +1,4 @@
+# jids
 fishery_recommender = "fishery_recommender@localhost"
 client_reporter = "client_reporter@localhost"
 crowd_monitoring = "crowd_monitoring@localhost"

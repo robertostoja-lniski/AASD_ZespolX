@@ -11,7 +11,6 @@ class BaseAgent(Agent):
 
     async def setup(self):
         self.add_behaviour(self.Behaviour())
-
         self.presence.approve_all = True
         self.presence.set_available()
         for jid in self.agents_to_subscribe:

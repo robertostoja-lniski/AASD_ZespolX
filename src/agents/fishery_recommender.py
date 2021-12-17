@@ -7,7 +7,7 @@ from src.agents.base_agent import BaseAgent
 class FisheryRecommender(BaseAgent):
     class Behaviour(CyclicBehaviour):
         async def run(self):
-            await asyncio.sleep(1)
+            pass
 
     async def setup(self):
         self.agents_to_subscribe = [spec.user, spec.data_accumulator]
