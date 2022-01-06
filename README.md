@@ -15,4 +15,4 @@
 
 ## About
 
-setup.sh - Contains xmpp account registrations for agents. If you want to create new agent you have to specify account for it in this file and run it from container again.
+prosody/accounts.sh - Contains xmpp account registrations for agents. If you want to create new agent you have to specify account for it in this file and run it from container again.
