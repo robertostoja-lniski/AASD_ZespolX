@@ -1,4 +1,6 @@
 from spade.agent import Agent
+
+from src.fishery.Fishery import Fishery
 from src.mas_logging import create_logger
 
 
@@ -13,6 +15,7 @@ class BaseAgent(Agent):
         self.logger.info('initialization')
         self.agents_to_subscribe = []
         self.behaviour = ...
+        self.fishery = ...
 
     async def setup(self):
         self.add_behaviour(self.behaviour)
@@ -25,3 +28,6 @@ class BaseAgent(Agent):
 
     def subscribe_to(self, producers: [Agent]):
         self.agents_to_subscribe.extend(producers)
+
+    def set_fishery(self, fishery: Fishery):
+        self.fishery = fishery

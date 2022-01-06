@@ -1,5 +1,6 @@
 import argparse
 
+import coolname
 from spade import quit_spade
 import keyboard
 from src.agents.client_reporter import *
@@ -10,6 +11,7 @@ from src.agents.fishery_recommender import FisheryRecommender
 from src.agents.user import User
 from src.agents.water_monitoring import WaterMonitoring
 from src.agents.weather_monitoring import WeatherMonitoring
+from src.fishery.Fishery import Fishery
 from src.mas_logging import create_logger
 
 
@@ -29,14 +31,21 @@ def main(n_fisheries: int):
     client_reporter_agent.subscribe_to([user_agent, data_accumulator_agent])
     agents.extend([data_accumulator_agent, fishery_recommender_agent, client_reporter_agent, user_agent])
 
-    for fishery in range(n_fisheries):
-        water_monitoring_agent = WaterMonitoring(f"{spec.water_monitoring['username']}_{str(fishery)}", spec.password, spec.host)
-        fish_content_monitoring_agent = FishContentMonitoring(f"{spec.fish_content_monitoring['username']}_{str(fishery)}", spec.password, spec.host)
-        weather_monitoring_agent = WeatherMonitoring(f"{spec.weather_monitoring['username']}_{str(fishery)}", spec.password, spec.host)
-        crowd_monitoring_agent = CrowdMonitoring(f"{spec.crowd_monitoring['username']}_{str(fishery)}", spec.password, spec.host)
+    for fishery_index in range(n_fisheries):
+        name = ' '.join(coolname.generate(2))
+        fishery = Fishery(name)
+        water_monitoring_agent = WaterMonitoring(f"{spec.water_monitoring['username']}_{str(fishery_index)}", spec.password, spec.host)
+        fish_content_monitoring_agent = FishContentMonitoring(f"{spec.fish_content_monitoring['username']}_{str(fishery_index)}", spec.password, spec.host)
+        weather_monitoring_agent = WeatherMonitoring(f"{spec.weather_monitoring['username']}_{str(fishery_index)}", spec.password, spec.host)
+        crowd_monitoring_agent = CrowdMonitoring(f"{spec.crowd_monitoring['username']}_{str(fishery_index)}", spec.password, spec.host)
 
         water_monitoring_agent.subscribe_to([weather_monitoring_agent])
         fish_content_monitoring_agent.subscribe_to([water_monitoring_agent])
+
+        water_monitoring_agent.set_fishery(fishery)
+        fish_content_monitoring_agent.set_fishery(fishery)
+        weather_monitoring_agent.set_fishery(fishery)
+        crowd_monitoring_agent.set_fishery(fishery)
         agents.extend([water_monitoring_agent, fish_content_monitoring_agent, weather_monitoring_agent, crowd_monitoring_agent])
         data_accumulator_agent.subscribe_to([water_monitoring_agent, fish_content_monitoring_agent, weather_monitoring_agent, crowd_monitoring_agent])
 

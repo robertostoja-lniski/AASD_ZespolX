@@ -14,5 +14,4 @@ class FisheryRecommender(BaseAgent):
         self.behaviour = self.Behaviour()
 
     async def setup(self):
-        self.agents_to_subscribe = [spec.user, spec.data_accumulator]
         await super().setup()

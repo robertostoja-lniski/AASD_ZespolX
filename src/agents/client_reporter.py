@@ -1,6 +1,5 @@
 from spade.behaviour import CyclicBehaviour
 
-from src import spec
 from src.agents.base_agent import BaseAgent
 
 
@@ -14,6 +13,5 @@ class ClientReporter(BaseAgent):
         self.behaviour = self.Behaviour()
 
     async def setup(self):
-        self.agents_to_subscribe = [spec.user, spec.data_accumulator]
         await super().setup()
 
