@@ -22,6 +22,7 @@ class FishContentMonitoring(BaseAgent):
         async def run(self):
             water_quality = None
             msg = await self.receive(timeout=10)
+            contacts = self.agent.presence.get_contacts()
             if msg is not None:
                 sender = str(msg.sender)
                 body = json.loads(msg.body)
@@ -34,9 +35,8 @@ class FishContentMonitoring(BaseAgent):
 
             fish_content = self.generator.next()
             fish_content_rating = self.agent.get_fish_content_rating(water_quality, fish_content)
-            contacts = self.agent.presence.get_contacts()
             for contact in contacts:
-                if contacts[contact]['subscription'] == 'from':
+                if 'subscription' in contacts[contact].keys() and contacts[contact]['subscription'] == 'from':
                     msg = Message(to=str(contact))
                     msg.body = json.dumps({
                         "type": DataType.FISH_CONTENT.value,

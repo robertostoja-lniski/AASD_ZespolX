@@ -1,4 +1,5 @@
 import argparse
+from time import sleep
 
 import coolname
 from spade import quit_spade
@@ -34,10 +35,14 @@ def main(n_fisheries: int):
     for fishery_index in range(n_fisheries):
         name = ' '.join(coolname.generate(2))
         fishery = Fishery(name)
-        water_monitoring_agent = WaterMonitoring(f"{spec.water_monitoring['username']}_{str(fishery_index)}", spec.password, spec.host)
-        fish_content_monitoring_agent = FishContentMonitoring(f"{spec.fish_content_monitoring['username']}_{str(fishery_index)}", spec.password, spec.host)
-        weather_monitoring_agent = WeatherMonitoring(f"{spec.weather_monitoring['username']}_{str(fishery_index)}", spec.password, spec.host)
-        crowd_monitoring_agent = CrowdMonitoring(f"{spec.crowd_monitoring['username']}_{str(fishery_index)}", spec.password, spec.host)
+        water_monitoring_agent = WaterMonitoring(f"{spec.water_monitoring['username']}_{str(fishery_index)}",
+                                                 spec.password, spec.host)
+        fish_content_monitoring_agent = FishContentMonitoring(
+            f"{spec.fish_content_monitoring['username']}_{str(fishery_index)}", spec.password, spec.host)
+        weather_monitoring_agent = WeatherMonitoring(f"{spec.weather_monitoring['username']}_{str(fishery_index)}",
+                                                     spec.password, spec.host)
+        crowd_monitoring_agent = CrowdMonitoring(f"{spec.crowd_monitoring['username']}_{str(fishery_index)}",
+                                                 spec.password, spec.host)
 
         water_monitoring_agent.subscribe_to([weather_monitoring_agent])
         fish_content_monitoring_agent.subscribe_to([water_monitoring_agent])
@@ -46,14 +51,19 @@ def main(n_fisheries: int):
         fish_content_monitoring_agent.set_fishery(fishery)
         weather_monitoring_agent.set_fishery(fishery)
         crowd_monitoring_agent.set_fishery(fishery)
-        agents.extend([water_monitoring_agent, fish_content_monitoring_agent, weather_monitoring_agent, crowd_monitoring_agent])
-        data_accumulator_agent.subscribe_to([water_monitoring_agent, fish_content_monitoring_agent, weather_monitoring_agent, crowd_monitoring_agent])
+        agents.extend(
+            [water_monitoring_agent, fish_content_monitoring_agent, weather_monitoring_agent, crowd_monitoring_agent])
+        data_accumulator_agent.subscribe_to(
+            [water_monitoring_agent, fish_content_monitoring_agent, weather_monitoring_agent, crowd_monitoring_agent])
 
     agents.extend([data_accumulator_agent, fishery_recommender_agent, client_reporter_agent, user_agent])
 
     port = 10001
     for agent in agents:
         future = agent.start()
+        future.result()
+
+    for agent in agents:
         agent.web.start(hostname="127.0.0.1", port=port)
         port += 1
 
@@ -64,12 +74,14 @@ def main(n_fisheries: int):
             quit_spade()
         break
 
+    for agent in agents:
+        agent.stop()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--n_fisheries', help='Number of fisheries', type=int,
-                        default=2)
+    parser.add_argument('--n_fisheries', help='Number of fisheries', type=int, default=2)
 
     args = parser.parse_args()
     main(args.n_fisheries)

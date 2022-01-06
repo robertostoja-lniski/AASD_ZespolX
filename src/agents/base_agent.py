@@ -25,6 +25,11 @@ class BaseAgent(Agent):
         for agent in self.agents_to_subscribe:
             self.presence.subscribe(str(agent.jid))
 
+        contacts = self.presence.get_contacts()
+        for contact in contacts:
+            if 'ask' in contacts[contact].keys() and contacts[contact]['ask'] == 'subscription':
+                self.presence.approve(str(contact))
+
         self.logger.info('is running')
 
     def subscribe_to(self, producers: [Agent]):
