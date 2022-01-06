@@ -2,7 +2,8 @@ import argparse
 
 import coolname
 from spade import quit_spade
-import keyboard
+
+import src.spec as spec
 from src.agents.client_reporter import *
 from src.agents.crowd_monitoring import CrowdMonitoring
 from src.agents.data_accumulator import DataAccumulator
