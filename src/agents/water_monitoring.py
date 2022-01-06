@@ -1,6 +1,5 @@
 from spade.behaviour import CyclicBehaviour
 
-from src import spec
 from src.agents.base_agent import BaseAgent
 
 
@@ -9,7 +8,10 @@ class WaterMonitoring(BaseAgent):
         async def run(self):
             pass
 
+    def __init__(self, username: str, password: str, host: str):
+        super().__init__(username, password, host)
+        self.behaviour = self.Behaviour()
+
     async def setup(self):
-        self.agents_to_subscribe = [spec.weather_monitoring]
         await super().setup()
 

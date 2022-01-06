@@ -3,17 +3,25 @@ from src.mas_logging import create_logger
 
 
 class BaseAgent(Agent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.logger = create_logger(self.__class__.__name__)
+    @staticmethod
+    def createJID(username: str, host: str):
+        return f"{username}@{host}"
+
+    def __init__(self, username: str, password: str, host: str):
+        super().__init__(jid=self.createJID(username, host), password=password)
+        self.logger = create_logger(f"{username} ({self.__class__.__name__})")
         self.logger.info('initialization')
         self.agents_to_subscribe = []
+        self.behaviour = ...
 
     async def setup(self):
-        self.add_behaviour(self.Behaviour())
+        self.add_behaviour(self.behaviour)
         self.presence.approve_all = True
         self.presence.set_available()
-        for jid in self.agents_to_subscribe:
-            self.presence.subscribe(jid)
+        for agent in self.agents_to_subscribe:
+            self.presence.subscribe(str(agent.jid))
 
         self.logger.info('is running')
+
+    def subscribe_to(self, producers: [Agent]):
+        self.agents_to_subscribe.extend(producers)

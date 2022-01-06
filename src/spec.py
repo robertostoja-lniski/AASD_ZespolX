@@ -1,10 +1,27 @@
 # jids
-fishery_recommender = "fishery_recommender@localhost"
-client_reporter = "client_reporter@localhost"
-crowd_monitoring = "crowd_monitoring@localhost"
-data_accumulator = "data_accumulator@localhost"
-fish_content_monitoring = "fish_content_monitoring@localhost"
-user = "user@localhost"
-water_monitoring = "water_monitoring@localhost"
-weather_monitoring = "weather_monitoring@localhost"
+fishery_recommender = {
+    "username": "fishery_recommender"
+}
+client_reporter = {
+    "username": "client_reporter"
+}
+crowd_monitoring = {
+    "username": "crowd_monitoring"
+}
+data_accumulator = {
+    "username": "data_accumulator"
+}
+fish_content_monitoring = {
+    "username": "fish_content_monitoring"
+}
+user = {
+    "username": "user"
+}
+water_monitoring = {
+    "username": "water_monitoring"
+}
+weather_monitoring = {
+    "username": "weather_monitoring"
+}
 password = '1qaz@WSX'
+host = "localhost"
