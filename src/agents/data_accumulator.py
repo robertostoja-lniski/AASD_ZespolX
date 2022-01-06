@@ -1,4 +1,5 @@
 import json
+from typing import Dict
 
 from spade.behaviour import CyclicBehaviour
 
@@ -9,24 +10,29 @@ class DataAccumulator(BaseAgent):
     class Behaviour(CyclicBehaviour):
         def __init__(self):
             super().__init__()
-            self.crowd = {}
+            self.data = {}
 
         async def run(self):
             msg = await self.receive(timeout=10)
             if msg is not None:
                 sender = str(msg.sender)
                 body = json.loads(msg.body)
-                self.agent.logger.info('received crowd data: ' + body['data'] + " from " + sender + " for fishery: " + body['fishery'])
-                self.crowd[sender] = int(body['data'])
-                self.agent.set_crowd(self.crowd, sender)
+                data = body['data']
+                type = body['type']
+                fishery = body['fishery']
+                self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
+                if type not in self.data.keys():
+                    self.data[type] = {}
+                self.data[type][sender] = body['data']
+                self.agent.set_data(self.data)
 
     def __init__(self, username: str, password: str, host: str):
         super().__init__(username, password, host)
         self.behaviour = self.Behaviour()
-        self.crowd = {}
+        self.data = {}
 
-    def set_crowd(self, crowd: int, sender_jid_str: str):
-        self.crowd[sender_jid_str] = crowd
+    def set_data(self, data: Dict):
+        self.data = data
 
     async def setup(self):
         await super().setup()

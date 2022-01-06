@@ -1,3 +1,5 @@
+from enum import Enum
+
 # jids
 fishery_recommender = {
     "username": "fishery_recommender"
@@ -25,3 +27,10 @@ weather_monitoring = {
 }
 password = '1qaz@WSX'
 host = "localhost"
+
+
+class DataType(Enum):
+    CROWD = 'Crowd'
+    FISH_CONTENT = 'Fish content'
+    WATER = 'Water quality'
+    WEATHER = 'Weather'

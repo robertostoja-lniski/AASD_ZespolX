@@ -7,6 +7,7 @@ from spade.message import Message
 from src import spec
 from src.agents.base_agent import BaseAgent
 from src.generators.CrowdGenerator import CrowdGenerator
+from src.spec import DataType
 
 
 class CrowdMonitoring(BaseAgent):
@@ -19,6 +20,7 @@ class CrowdMonitoring(BaseAgent):
         async def run(self):
             msg = Message(to=BaseAgent.createJID(spec.data_accumulator['username'], spec.host))
             msg.body = json.dumps({
+                "type": str(DataType.CROWD),
                 "fishery": self.agent.fishery.name,
                 "data": str(self.generator.next())
             })
