@@ -34,6 +34,7 @@ def main(n_fisheries: int):
     for fishery_index in range(n_fisheries):
         name = ' '.join(coolname.generate(2))
         fishery = Fishery(name)
+
         water_monitoring_agent = WaterMonitoring(f"{spec.water_monitoring['username']}_{str(fishery_index)}", spec.password, spec.host)
         fish_content_monitoring_agent = FishContentMonitoring(f"{spec.fish_content_monitoring['username']}_{str(fishery_index)}", spec.password, spec.host)
         weather_monitoring_agent = WeatherMonitoring(f"{spec.weather_monitoring['username']}_{str(fishery_index)}", spec.password, spec.host)
@@ -62,7 +63,7 @@ def main(n_fisheries: int):
         if key == 'q':
             logger.info('q key has been recognized, stopping program')
             quit_spade()
-        break
+            break
 
 
 if __name__ == "__main__":
