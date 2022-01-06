@@ -11,7 +11,7 @@
 1. Run `./setup.sh` (don't bother about errors)
 
 ## Run
-* Run `python src/main.py` in imported conda environment
+* Run `python -m src.main` in imported conda environment
 
 ## About
 
