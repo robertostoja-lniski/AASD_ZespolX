@@ -32,5 +32,5 @@ host = "localhost"
 class DataType(Enum):
     CROWD = 'Crowd'
     FISH_CONTENT = 'Fish content'
-    WATER = 'Water quality'
+    WATER_QUALITY = 'Water quality'
     WEATHER = 'Weather'

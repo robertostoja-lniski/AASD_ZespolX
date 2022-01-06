@@ -1,6 +1,5 @@
 from spade.behaviour import CyclicBehaviour
 
-from src import spec
 from src.agents.base_agent import BaseAgent
 
 

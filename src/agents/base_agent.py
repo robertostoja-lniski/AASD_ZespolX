@@ -1,3 +1,4 @@
+from aioxmpp import PresenceShow
 from spade.agent import Agent
 
 from src.fishery.Fishery import Fishery

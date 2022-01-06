@@ -4,6 +4,9 @@ from typing import Dict
 from spade.behaviour import CyclicBehaviour
 
 from src.agents.base_agent import BaseAgent
+from src.generators.WaterQualityGenerator import WaterQuality
+from src.generators.WeatherGenerator import Weather
+from src.spec import DataType
 
 
 class DataAccumulator(BaseAgent):
@@ -23,7 +26,13 @@ class DataAccumulator(BaseAgent):
                 self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
                 if type not in self.data.keys():
                     self.data[type] = {}
-                self.data[type][sender] = body['data']
+
+                if type == DataType.WATER_QUALITY.value:
+                    self.data[type][sender] = WaterQuality.deserialize(body['data'])
+                elif type == DataType.WEATHER.value:
+                    self.data[type][sender] = Weather.deserialize(body['data'])
+                else:
+                    self.data[type][sender] = body['data']
                 self.agent.set_data(self.data)
 
     def __init__(self, username: str, password: str, host: str):
