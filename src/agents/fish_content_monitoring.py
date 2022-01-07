@@ -1,5 +1,6 @@
 import asyncio
 import json
+import random
 from enum import Enum
 
 import jsonpickle
@@ -57,14 +58,14 @@ class FishContentMonitoring(BaseAgent):
         await super().setup()
 
     def get_fish_content_rating(self, water_quality: WaterQuality, fish_content: int) -> Enum:
-        # TODO
-        return self.FishContentRating.AVERAGE
+        #TODO
+        return self.FishContentRating(random.choice([e.value for e in FishContentMonitoring.FishContentRating]))
 
     class FishContentRating(Enum):
-        VERY_LOW = 'Very low'
-        LOW = 'Low'
-        AVERAGE = 'Average'
-        DECENT = 'Decent'
-        HIGH = 'High'
-        VERY_HIGH = 'Very high'
+        VERY_LOW = 0
+        LOW = 0.2
+        AVERAGE = 0.4
+        DECENT = 0.6
+        HIGH = 0.8
+        VERY_HIGH = 1
 

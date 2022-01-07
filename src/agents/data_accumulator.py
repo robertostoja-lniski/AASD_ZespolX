@@ -5,8 +5,6 @@ from spade.message import Message
 from spade.template import Template
 
 from src.agents.base_agent import BaseAgent
-from src.generators.WaterQualityGenerator import WaterQuality
-from src.generators.WeatherGenerator import Weather
 from src.spec import DataType
 
 
@@ -25,10 +23,10 @@ class DataAccumulator(BaseAgent):
                 type = DataType.WATER_QUALITY.value
                 fishery = body['fishery']
                 self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
-                if type not in self.agent.data.keys():
-                    self.agent.data[type] = {}
+                if fishery not in self.agent.data.keys():
+                    self.agent.data[fishery] = {}
 
-                self.agent.data[type][sender] = jsonpickle.decode(body['data'])
+                self.agent.data[fishery][type] = jsonpickle.decode(body['data'])
 
     class ReceiveWeatherBehaviour(BaseAgent.BaseAgentBehaviour):
         def __init__(self):
@@ -44,10 +42,10 @@ class DataAccumulator(BaseAgent):
                 type = DataType.WEATHER.value
                 fishery = body['fishery']
                 self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
-                if type not in self.agent.data.keys():
-                    self.agent.data[type] = {}
+                if fishery not in self.agent.data.keys():
+                    self.agent.data[fishery] = {}
 
-                self.agent.data[type][sender] = jsonpickle.decode(body['data'])
+                self.agent.data[fishery][type] = jsonpickle.decode(body['data'])
 
     class ReceiveCrowdBehaviour(BaseAgent.BaseAgentBehaviour):
         def __init__(self):
@@ -66,7 +64,7 @@ class DataAccumulator(BaseAgent):
                 if fishery not in self.agent.data.keys():
                     self.agent.data[fishery] = {}
 
-                self.agent.data[fishery][type] = body['data']
+                self.agent.data[fishery][type] = int(body['data'])
 
     class ReceiveFishContentBehaviour(BaseAgent.BaseAgentBehaviour):
         def __init__(self):
@@ -82,10 +80,10 @@ class DataAccumulator(BaseAgent):
                 type = DataType.FISH_CONTENT.value
                 fishery = body['fishery']
                 self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
-                if type not in self.agent.data.keys():
-                    self.agent.data[type] = {}
+                if fishery not in self.agent.data.keys():
+                    self.agent.data[fishery] = {}
 
-                self.agent.data[type][sender] = json.loads(body['data'])
+                self.agent.data[fishery][type] = json.loads(body['data'])
 
     class HandleDataRequestBehaviour(BaseAgent.BaseAgentBehaviour):
         def __init__(self):

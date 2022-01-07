@@ -1,10 +1,16 @@
+import datetime
 import json
+import os
 
+import jsonpickle
 from aioxmpp import JID
 from spade.message import Message
 from spade.template import Template
-
+from src.agents.fish_content_monitoring import FishContentMonitoring
 from src.agents.base_agent import BaseAgent
+from src.generators.WaterQualityGenerator import MAX_WATER_TEMPERATURE
+from src.generators.WeatherGenerator import MIN_TEMPERATURE, MAX_TEMPERATURE, MIN_PRESSURE, MAX_PRESSURE, \
+    MAX_PRECIPITATION, MAX_WIND_SPEED, MAX_CLOUDINESS
 from src.spec import DataType
 
 
@@ -34,10 +40,10 @@ class FisheryRecommender(BaseAgent):
             await super().run()
             msg = await self.receive(timeout=10)
             if msg is not None:
-                data = json.loads(msg.body)['data']
+                data = jsonpickle.decode(json.loads(msg.body)['data'])
                 recommendation = self.agent.get_recommendation(data)
                 for requester in self.agent.recommendation_requests_queue:
-                    self.agent.save_recommendation_for_user(requester, recommendation)
+                    self.agent.save_recommendation_for_user(requester, recommendation, data)
                 self.agent.recommendation_requests_queue = set([])
             self.agent.data_request_sent = False
 
@@ -58,11 +64,68 @@ class FisheryRecommender(BaseAgent):
         await super().setup()
 
     def get_recommendation(self, data):
-        # TODO
         self.logger.info("Creating recommendation...")
-        return ""
 
-    def save_recommendation_for_user(self, user: JID, recommendation):
-        # TODO
+        highest_crowd = 0
+        for fishery in data.keys():
+            crowd = data[fishery][DataType.CROWD.value]
+            highest_crowd = crowd if crowd > highest_crowd else highest_crowd
+
+        fishery_scores = {}
+        for fishery in data.keys():
+            fish_content_score = data[fishery][DataType.FISH_CONTENT.value]['fish_content_rating']
+            water_contamination_score = (100 - data[fishery][DataType.WATER_QUALITY.value].contamination_level) / 100
+            water_oxygen_level_score = (100 - data[fishery][DataType.WATER_QUALITY.value].oxygen_level) / 100
+            water_temperature = data[fishery][DataType.WATER_QUALITY.value].temperature
+            water_temperature_score = 0 if water_temperature < 4 else (water_temperature - 4) / (15 - 4) if water_temperature < 15 \
+                else (MAX_WATER_TEMPERATURE - water_temperature) / (MAX_WATER_TEMPERATURE - 15)
+
+            water_quality_score = (water_temperature_score + water_contamination_score + water_oxygen_level_score) / 3
+
+            weather_data = data[fishery][DataType.WEATHER.value]
+            temperature_score = (weather_data.temperature - MIN_TEMPERATURE) / (20 - MIN_TEMPERATURE) if weather_data.temperature <= 20 \
+                else (MAX_TEMPERATURE - weather_data.temperature) / (MAX_TEMPERATURE - 20)
+            pressure_score = (weather_data.pressure - MIN_PRESSURE) / (1000. - MIN_PRESSURE) if weather_data.pressure <= 1000. \
+                else (MAX_PRESSURE - weather_data.pressure) / (MAX_PRESSURE - 1000.)
+            precipitation_score = (MAX_PRECIPITATION - weather_data.precipitation_rate) / MAX_PRECIPITATION
+            wind_speed_score = (MAX_WIND_SPEED - weather_data.wind_speed) / MAX_WIND_SPEED
+            cloudiness_score = (MAX_CLOUDINESS - weather_data.cloudiness) / MAX_CLOUDINESS
+
+            weather_score = 0.3 * temperature_score + 0.3 * precipitation_score + 0.2 * wind_speed_score + 0.1 * pressure_score + 0.1 * cloudiness_score
+
+            crowd_score = data[fishery][DataType.CROWD.value] / highest_crowd
+
+            overall_score = weather_score + water_quality_score + fish_content_score + crowd_score
+            fishery_scores[fishery] = overall_score
+
+        best_fishery = None
+        for fishery in fishery_scores.keys():
+            if best_fishery is None or fishery_scores[fishery] > fishery_scores[best_fishery]:
+                best_fishery = fishery
+
+        return best_fishery, fishery_scores[best_fishery]
+
+    def save_recommendation_for_user(self, user: JID, recommendation: (str, dict), data):
         self.logger.info("Saving recommendation for user " + str(user))
+        fishery = recommendation[0]
+        score = recommendation[1]
+        txt = f"""Best fishery: {fishery}
+Overall score: {score} out of max 4
+Crowd at the fishery: {data[fishery][DataType.CROWD.value]} persons
+Fish content: {data[fishery][DataType.FISH_CONTENT.value]['fish_content']}
+Fish content rating: {FishContentMonitoring.FishContentRating(data[fishery][DataType.FISH_CONTENT.value]['fish_content_rating']).name}
+Water contamination level: {data[fishery][DataType.WATER_QUALITY.value].contamination_level * 100}%
+Water oxygen level: {data[fishery][DataType.WATER_QUALITY.value].oxygen_level * 100}%
+Water temperature: {"{:.1f}".format(data[fishery][DataType.WATER_QUALITY.value].temperature)}°C
+Air temperature: {"{:.1f}".format(data[fishery][DataType.WEATHER.value].temperature)}°C
+Precipitation: {"{:.1f}".format(data[fishery][DataType.WEATHER.value].precipitation_rate)}mm/h
+Air pressure: {"{:.1f}".format(data[fishery][DataType.WEATHER.value].pressure)}hPa
+Wind speed: {"{:.1f}".format(data[fishery][DataType.WEATHER.value].wind_speed)}km/h
+Clouds: {int(data[fishery][DataType.WEATHER.value].cloudiness)}%"""
+        reports_dir = os.path.join('recommendations', str(user))
+        os.makedirs(reports_dir, exist_ok=True)
+        report_file = os.path.join(reports_dir, f"recommendation_{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.txt")
+        f = open(report_file, 'x', encoding='utf8')
+        f.write(txt)
+        f.close()
         pass

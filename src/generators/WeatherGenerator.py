@@ -1,6 +1,15 @@
-import json
 import random
-from enum import Enum
+
+MIN_TEMPERATURE = -30.
+MAX_TEMPERATURE = 40.
+MIN_PRESSURE = 950.
+MAX_PRESSURE = 1050.
+MIN_PRECIPITATION = 0.
+MAX_PRECIPITATION = 100.
+MIN_WIND_SPEED = 0.
+MAX_WIND_SPEED = 120.
+MIN_CLOUDINESS = 0.
+MAX_CLOUDINESS = 100.
 
 
 class WeatherGenerator:
@@ -10,11 +19,11 @@ class WeatherGenerator:
         self.weather = Weather()
 
     def next(self):
-        temperature = min(max(-30, self.weather.temperature + int(random.randint(-3, 3))), 40)
-        pressure = min(max(950., self.weather.pressure + float(random.uniform(-10, 10))), 1050)
-        precipitation_rate = min(max(0., self.weather.precipitation_rate + float(random.uniform(-10, 10))), 100)
-        wind_speed = min(max(0., self.weather.wind_speed + float(random.uniform(-10, 10))), 120)
-        cloudiness = min(max(0., self.weather.cloudiness + float(random.uniform(-10, 10))), 100)
+        temperature = min(max(MIN_TEMPERATURE, self.weather.temperature + int(random.uniform(-2, 2))), MAX_TEMPERATURE)
+        pressure = min(max(MIN_PRESSURE, self.weather.pressure + float(random.uniform(-2, 2))), MAX_PRESSURE)
+        precipitation_rate = min(max(MIN_PRECIPITATION, self.weather.precipitation_rate + float(random.uniform(-2, 2))), MAX_PRECIPITATION)
+        wind_speed = min(max(MIN_WIND_SPEED, self.weather.wind_speed + float(random.uniform(-2, 2))), MAX_WIND_SPEED)
+        cloudiness = min(max(MIN_CLOUDINESS, self.weather.cloudiness + float(random.uniform(-10, 10))), MAX_CLOUDINESS)
         self.weather.temperature = temperature
         self.weather.pressure = pressure
         self.weather.precipitation_rate = precipitation_rate
@@ -27,8 +36,8 @@ class Weather:
 
     def __init__(self) -> None:
         super().__init__()
-        self.temperature = int(random.randint(-30, 40))
-        self.pressure = float(random.uniform(950, 1050))
-        self.precipitation_rate = float(random.uniform(0, 100))
-        self.wind_speed = float(random.uniform(0, 120))
-        self.cloudiness = float(random.uniform(0, 100))
+        self.temperature = float(random.uniform(MIN_TEMPERATURE, MAX_TEMPERATURE))
+        self.pressure = float(random.uniform(MIN_PRESSURE, MAX_PRESSURE))
+        self.precipitation_rate = float(random.uniform(MIN_PRECIPITATION, MAX_PRECIPITATION))
+        self.wind_speed = float(random.uniform(MIN_WIND_SPEED, MAX_WIND_SPEED))
+        self.cloudiness = float(random.uniform(MIN_CLOUDINESS, MAX_CLOUDINESS))
