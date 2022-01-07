@@ -10,22 +10,23 @@ from src.spec import DataType
 
 
 class WeatherMonitoring(BaseAgent):
-    class Behaviour(CyclicBehaviour):
+    class Behaviour(BaseAgent.BaseAgentBehaviour):
         def __init__(self):
             super().__init__()
             self.generator = WeatherGenerator()
 
         async def run(self):
+            await super().run()
             contacts = self.agent.presence.get_contacts()
             weather = self.generator.next()
             for contact in contacts:
                 if contacts[contact]['subscription'] == 'from':
                     msg = Message(to=str(contact))
                     msg.body = json.dumps({
-                        "type": DataType.WEATHER.value,
                         "fishery": self.agent.fishery.name,
                         "data": weather.toJSON()
                     })
+                    msg.metadata = {"type": DataType.WEATHER.value}
                     await self.send(msg)
                     self.agent.logger.info('sent weather data: ' + msg.body)
                     await asyncio.sleep(2)
@@ -35,5 +36,6 @@ class WeatherMonitoring(BaseAgent):
         self.behaviour = self.Behaviour()
 
     async def setup(self):
+        self.add_behaviour(self.behaviour)
         await super().setup()
 

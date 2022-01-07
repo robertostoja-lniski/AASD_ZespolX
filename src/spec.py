@@ -34,3 +34,7 @@ class DataType(Enum):
     FISH_CONTENT = 'Fish content'
     WATER_QUALITY = 'Water quality'
     WEATHER = 'Weather'
+    RECOMMENDATION_REQUEST = 'Recommendation request'
+    RECOMMENDATION_RESPONSE = 'Recommendation response'
+    DATA_REQUEST = 'Data request'
+    DATA_RESPONSE = 'Data response'

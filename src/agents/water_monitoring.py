@@ -4,6 +4,7 @@ from enum import Enum
 
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
+from spade.template import Template
 
 from src.agents.base_agent import BaseAgent
 from src.generators.WaterQualityGenerator import WaterQualityGenerator, WaterQuality
@@ -12,12 +13,13 @@ from src.spec import DataType
 
 
 class WaterMonitoring(BaseAgent):
-    class Behaviour(CyclicBehaviour):
+    class Behaviour(BaseAgent.BaseAgentBehaviour):
         def __init__(self):
             super().__init__()
             self.generator = WaterQualityGenerator()
 
         async def run(self):
+            await super().run()
             msg = await self.receive(timeout=10)
             contacts = self.agent.presence.get_contacts()
             water_quality = self.generator.next()
@@ -37,20 +39,24 @@ class WaterMonitoring(BaseAgent):
                 if contacts[contact]['subscription'] == 'from':
                     msg = Message(to=str(contact))
                     msg.body = json.dumps({
-                        "type": DataType.WATER_QUALITY.value,
                         "fishery": self.agent.fishery.name,
                         "data": water_quality.toJSON()
                     })
+                    msg.metadata = {"type":  DataType.WATER_QUALITY.value}
                     await self.send(msg)
                     self.agent.logger.info('sent water quality data: ' + msg.body)
                     await asyncio.sleep(2)
 
     def __init__(self, username: str, password: str, host: str):
         super().__init__(username, password, host)
+        self.generator = WaterQualityGenerator()
         self.behaviour = self.Behaviour()
         self.cleansing_running = False
 
     async def setup(self):
+        template = Template()
+        template.metadata = {"type": DataType.WEATHER.value}
+        self.add_behaviour(self.behaviour, template=template)
         await super().setup()
 
     def get_water_quality_rating(self, weather: Weather, water_quality: WaterQuality) -> Enum:

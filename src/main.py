@@ -29,9 +29,10 @@ def main(n_fisheries: int):
     user_agent = User(spec.user['username'], spec.password, spec.host)
 
     fishery_recommender_agent.subscribe_to([user_agent, data_accumulator_agent])
+    data_accumulator_agent.subscribe_to([fishery_recommender_agent])
     client_reporter_agent.subscribe_to([user_agent, data_accumulator_agent])
 
-    for fishery_index in range(n_fisheries):
+    for fishery_index in range(0, n_fisheries):
         name = ' '.join(coolname.generate(2))
         fishery = Fishery(name)
 
@@ -56,7 +57,7 @@ def main(n_fisheries: int):
         data_accumulator_agent.subscribe_to(
             [water_monitoring_agent, fish_content_monitoring_agent, weather_monitoring_agent, crowd_monitoring_agent])
 
-    agents.extend([data_accumulator_agent, fishery_recommender_agent, client_reporter_agent, user_agent])
+    agents.extend([data_accumulator_agent, user_agent, fishery_recommender_agent, client_reporter_agent])
 
     port = 10001
     for agent in agents:

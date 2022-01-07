@@ -2,10 +2,9 @@ import asyncio
 import json
 from enum import Enum
 
-from spade.behaviour import CyclicBehaviour
 from spade.message import Message
+from spade.template import Template
 
-from src import spec
 from src.agents.base_agent import BaseAgent
 from src.generators.FishContentGenerator import FishContentGenerator
 from src.generators.WaterQualityGenerator import WaterQuality
@@ -13,13 +12,13 @@ from src.spec import DataType
 
 
 class FishContentMonitoring(BaseAgent):
-    class Behaviour(CyclicBehaviour):
-
+    class Behaviour(BaseAgent.BaseAgentBehaviour):
         def __init__(self):
             super().__init__()
             self.generator = FishContentGenerator()
 
         async def run(self):
+            await super().run()
             water_quality = None
             msg = await self.receive(timeout=10)
             contacts = self.agent.presence.get_contacts()
@@ -39,10 +38,13 @@ class FishContentMonitoring(BaseAgent):
                 if 'subscription' in contacts[contact].keys() and contacts[contact]['subscription'] == 'from':
                     msg = Message(to=str(contact))
                     msg.body = json.dumps({
-                        "type": DataType.FISH_CONTENT.value,
                         "fishery": self.agent.fishery.name,
-                        "data": fish_content_rating.value
+                        "data": json.dumps({
+                            "fish_content": fish_content,
+                            "fish_content_rating": fish_content_rating.value
+                        })
                     })
+                    msg.metadata = {"type": DataType.FISH_CONTENT.value}
                     await self.send(msg)
                     self.agent.logger.info('sent fish content data: ' + msg.body)
                     await asyncio.sleep(2)
@@ -52,6 +54,9 @@ class FishContentMonitoring(BaseAgent):
         self.behaviour = self.Behaviour()
 
     async def setup(self):
+        template = Template()
+        template.metadata = {"type": DataType.WATER_QUALITY.value}
+        self.add_behaviour(self.behaviour, template=template)
         await super().setup()
 
     def get_fish_content_rating(self, water_quality: WaterQuality, fish_content: int) -> Enum:

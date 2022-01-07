@@ -1,11 +1,10 @@
-from spade.behaviour import CyclicBehaviour
-
 from src.agents.base_agent import BaseAgent
 
 
 class ClientReporter(BaseAgent):
-    class Behaviour(CyclicBehaviour):
+    class Behaviour(BaseAgent.BaseAgentBehaviour):
         async def run(self):
+            await super().run()
             pass
 
     def __init__(self, username: str, password: str, host: str):
@@ -13,5 +12,6 @@ class ClientReporter(BaseAgent):
         self.behaviour = self.Behaviour()
 
     async def setup(self):
+        self.add_behaviour(self.behaviour)
         await super().setup()
 
