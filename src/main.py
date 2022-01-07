@@ -85,4 +85,6 @@ if __name__ == "__main__":
     parser.add_argument('--n_fisheries', help='Number of fisheries', type=int, default=2)
 
     args = parser.parse_args()
+    if args.n_fisheries > 10:
+        raise ValueError("--n_fisheries cannot be larger than 10!")
     main(args.n_fisheries)
