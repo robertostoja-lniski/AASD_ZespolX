@@ -21,13 +21,11 @@ class User(BaseAgent):
             await super().run()
             if keyboard.is_pressed('f'):
                 self.agent.logger.info('f key has been pressed, generating recommendation')
-                contacts = self.agent.presence.get_contacts()
-                for contact in contacts:
-                    if 'subscription' in contacts[contact].keys() and contacts[contact]['subscription'] == 'from':
-                        msg = Message(to=str(contact))
-                        msg.metadata = {"type": DataType.RECOMMENDATION_REQUEST.value}
-                        await self.send(msg)
-                        self.agent.logger.info('sent recommendation request to ' + str(contact))
+                msg = Message()
+                msg.metadata = {"type": DataType.RECOMMENDATION_REQUEST.value}
+                await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info(
+                    'sent recommendation request to ' + str(contact)))
+
             elif keyboard.is_pressed('r'):
                 self.agent.logger.info('r key has been pressed, generating report')
                 await asyncio.sleep(1)

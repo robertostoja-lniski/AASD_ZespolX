@@ -1,6 +1,7 @@
 import asyncio
 import json
 
+import jsonpickle as jsonpickle
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
 
@@ -17,19 +18,15 @@ class WeatherMonitoring(BaseAgent):
 
         async def run(self):
             await super().run()
-            contacts = self.agent.presence.get_contacts()
             weather = self.generator.next()
-            for contact in contacts:
-                if contacts[contact]['subscription'] == 'from':
-                    msg = Message(to=str(contact))
-                    msg.body = json.dumps({
-                        "fishery": self.agent.fishery.name,
-                        "data": weather.toJSON()
-                    })
-                    msg.metadata = {"type": DataType.WEATHER.value}
-                    await self.send(msg)
-                    self.agent.logger.info('sent weather data: ' + msg.body)
-                    await asyncio.sleep(2)
+            msg = Message()
+            msg.body = json.dumps({
+                "fishery": self.agent.fishery.name,
+                "data": jsonpickle.encode(weather)
+            })
+            msg.metadata = {"type": DataType.WEATHER.value}
+            await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info('sent weather data: ' + msg.body))
+            await asyncio.sleep(2)
 
     def __init__(self, username: str, password: str, host: str):
         super().__init__(username, password, host)

@@ -25,17 +25,3 @@ class WaterQuality:
         self.temperature = int(random.randint(0, 30))
         self.oxygen_level = float(random.uniform(0, 100))
         self.contamination_level = float(random.uniform(0, 100))
-
-    def toJSON(self):
-        return json.dumps(self.__dict__)
-
-    @staticmethod
-    def deserialize(json_str: str):
-        obj = json.loads(json_str)
-        water_quality = WaterQuality()
-
-        water_quality.temperature = obj['temperature']
-        water_quality.oxygen_level = obj['oxygen_level']
-        water_quality.contamination_level = obj['contamination_level']
-
-        return water_quality

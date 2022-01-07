@@ -17,16 +17,14 @@ class FisheryRecommender(BaseAgent):
             await super().run()
             msg = await self.receive(timeout=10)
             if msg is not None:
+                self.agent.logger.info("Received recommendation request from " + str(msg.sender))
                 self.agent.recommendation_requests_queue.add(msg.sender)
                 if not self.agent.data_request_sent:
-                    contacts = self.agent.presence.get_contacts()
-                    for contact in contacts:
-                        if contacts[contact]['subscription'] == 'from':
-                            msg = Message(to=str(contact))
-                            msg.metadata = {"type": DataType.DATA_REQUEST.values}
-                            await self.send(msg)
-                            self.agent.data_request_sent = True
-                            self.agent.logger.info('sent data request to ' + str(contact))
+                    msg = Message()
+                    msg.metadata = {"type": DataType.DATA_REQUEST.value}
+                    await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info(
+                        'sent data request to ' + str(contact)))
+                    self.agent.data_request_sent = True
 
     class HandleDataResponseBehaviour(BaseAgent.BaseAgentBehaviour):
         def __init__(self):
@@ -39,9 +37,9 @@ class FisheryRecommender(BaseAgent):
                 data = json.loads(msg.body)['data']
                 recommendation = self.agent.get_recommendation(data)
                 for requester in self.agent.recommendation_requests_queue:
-                    self.agent.save_recommandation_for_user(requester, recommendation)
-                    self.agent.recommendation_requests_queue.discard(requester)
-                self.agent.data_request_sent = False
+                    self.agent.save_recommendation_for_user(requester, recommendation)
+                self.agent.recommendation_requests_queue = set([])
+            self.agent.data_request_sent = False
 
     def __init__(self, username: str, password: str, host: str):
         super().__init__(username, password, host)
@@ -61,10 +59,10 @@ class FisheryRecommender(BaseAgent):
 
     def get_recommendation(self, data):
         # TODO
-        print("Creating recommendation...")
+        self.logger.info("Creating recommendation...")
         return ""
 
-    def save_recommandation_for_user(self, user: JID, recommendation):
+    def save_recommendation_for_user(self, user: JID, recommendation):
         # TODO
-        print("Saving recommendation for user " + str(user))
+        self.logger.info("Saving recommendation for user " + str(user))
         pass

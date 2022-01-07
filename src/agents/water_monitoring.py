@@ -2,6 +2,7 @@ import asyncio
 import json
 from enum import Enum
 
+import jsonpickle
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
 from spade.template import Template
@@ -21,7 +22,6 @@ class WaterMonitoring(BaseAgent):
         async def run(self):
             await super().run()
             msg = await self.receive(timeout=10)
-            contacts = self.agent.presence.get_contacts()
             water_quality = self.generator.next()
             if msg is not None:
                 sender = str(msg.sender)
@@ -29,23 +29,21 @@ class WaterMonitoring(BaseAgent):
                 data = body['data']
                 fishery = body['fishery']
                 self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
-                weather = Weather.deserialize(body['data'])
+                weather = jsonpickle.decode(body['data'])
                 water_quality_rating = self.agent.get_water_quality_rating(weather, water_quality)
                 self.agent.setup_cleansing(water_quality_rating)
             else:
                 self.agent.logger.info("Didn't receive any weather data. Water cleansing will not be triggered/ended.")
 
-            for contact in contacts:
-                if contacts[contact]['subscription'] == 'from':
-                    msg = Message(to=str(contact))
-                    msg.body = json.dumps({
-                        "fishery": self.agent.fishery.name,
-                        "data": water_quality.toJSON()
-                    })
-                    msg.metadata = {"type":  DataType.WATER_QUALITY.value}
-                    await self.send(msg)
-                    self.agent.logger.info('sent water quality data: ' + msg.body)
-                    await asyncio.sleep(2)
+            msg = Message()
+            msg.body = json.dumps({
+                "fishery": self.agent.fishery.name,
+                "data": jsonpickle.encode(water_quality)
+            })
+            msg.metadata = {"type": DataType.WATER_QUALITY.value}
+            await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info(
+                'sent water quality data: ' + msg.body))
+            await asyncio.sleep(2)
 
     def __init__(self, username: str, password: str, host: str):
         super().__init__(username, password, host)

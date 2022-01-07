@@ -1,5 +1,7 @@
 import json
 
+import jsonpickle
+from spade.message import Message
 from spade.template import Template
 
 from src.agents.base_agent import BaseAgent
@@ -26,7 +28,7 @@ class DataAccumulator(BaseAgent):
                 if type not in self.agent.data.keys():
                     self.agent.data[type] = {}
 
-                self.agent.data[type][sender] = WaterQuality.deserialize(body['data'])
+                self.agent.data[type][sender] = jsonpickle.decode(body['data'])
 
     class ReceiveWeatherBehaviour(BaseAgent.BaseAgentBehaviour):
         def __init__(self):
@@ -45,7 +47,7 @@ class DataAccumulator(BaseAgent):
                 if type not in self.agent.data.keys():
                     self.agent.data[type] = {}
 
-                self.agent.data[type][sender] = Weather.deserialize(body['data'])
+                self.agent.data[type][sender] = jsonpickle.decode(body['data'])
 
     class ReceiveCrowdBehaviour(BaseAgent.BaseAgentBehaviour):
         def __init__(self):
@@ -61,10 +63,10 @@ class DataAccumulator(BaseAgent):
                 type = DataType.CROWD.value
                 fishery = body['fishery']
                 self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
-                if type not in self.agent.data.keys():
-                    self.agent.data[type] = {}
+                if fishery not in self.agent.data.keys():
+                    self.agent.data[fishery] = {}
 
-                self.agent.data[type][sender] = body['data']
+                self.agent.data[fishery][type] = body['data']
 
     class ReceiveFishContentBehaviour(BaseAgent.BaseAgentBehaviour):
         def __init__(self):
@@ -85,12 +87,33 @@ class DataAccumulator(BaseAgent):
 
                 self.agent.data[type][sender] = json.loads(body['data'])
 
+    class HandleDataRequestBehaviour(BaseAgent.BaseAgentBehaviour):
+        def __init__(self):
+            super().__init__()
+
+        async def run(self):
+            await super().run()
+            msg = await self.receive(timeout=10)
+            if msg is not None:
+                sender = str(msg.sender)
+                self.agent.logger.info(f"received data request from {sender}.")
+
+                data = jsonpickle.encode(self.agent.data)
+
+                msg = Message(to=sender)
+                msg.body = json.dumps({
+                    "data": data
+                })
+                msg.metadata = {"type": DataType.DATA_RESPONSE.value}
+                await self.send(msg)
+
     def __init__(self, username: str, password: str, host: str):
         super().__init__(username, password, host)
         self.receive_water_quality_behaviour = self.ReceiveWaterQualityBehaviour()
         self.receive_weather_behaviour = self.ReceiveWeatherBehaviour()
         self.receive_crowd_behaviour = self.ReceiveCrowdBehaviour()
         self.receive_fish_content_behaviour = self.ReceiveFishContentBehaviour()
+        self.handle_data_request_behaviour = self.HandleDataRequestBehaviour()
         self.data = {}
 
     async def setup(self):
@@ -109,6 +132,10 @@ class DataAccumulator(BaseAgent):
         template = Template()
         template.metadata = {"type": DataType.FISH_CONTENT.value}
         self.add_behaviour(self.receive_fish_content_behaviour, template=template)
+
+        template = Template()
+        template.metadata = {"type": DataType.DATA_REQUEST.value}
+        self.add_behaviour(self.handle_data_request_behaviour, template=template)
         await super().setup()
 
 

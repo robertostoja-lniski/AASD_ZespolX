@@ -2,6 +2,7 @@ import asyncio
 import json
 from enum import Enum
 
+import jsonpickle
 from spade.message import Message
 from spade.template import Template
 
@@ -21,33 +22,29 @@ class FishContentMonitoring(BaseAgent):
             await super().run()
             water_quality = None
             msg = await self.receive(timeout=10)
-            contacts = self.agent.presence.get_contacts()
             if msg is not None:
                 sender = str(msg.sender)
                 body = json.loads(msg.body)
                 data = body['data']
                 fishery = body['fishery']
                 self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
-                water_quality = WaterQuality.deserialize(body['data'])
+                water_quality = jsonpickle.decode(body['data'])
             else:
                 self.agent.logger.info("Didn't receive any water quality data")
 
             fish_content = self.generator.next()
             fish_content_rating = self.agent.get_fish_content_rating(water_quality, fish_content)
-            for contact in contacts:
-                if 'subscription' in contacts[contact].keys() and contacts[contact]['subscription'] == 'from':
-                    msg = Message(to=str(contact))
-                    msg.body = json.dumps({
-                        "fishery": self.agent.fishery.name,
-                        "data": json.dumps({
-                            "fish_content": fish_content,
-                            "fish_content_rating": fish_content_rating.value
-                        })
-                    })
-                    msg.metadata = {"type": DataType.FISH_CONTENT.value}
-                    await self.send(msg)
-                    self.agent.logger.info('sent fish content data: ' + msg.body)
-                    await asyncio.sleep(2)
+            msg = Message()
+            msg.body = json.dumps({
+                "fishery": self.agent.fishery.name,
+                "data": json.dumps({
+                    "fish_content": fish_content,
+                    "fish_content_rating": fish_content_rating.value
+                })
+            })
+            msg.metadata = {"type": DataType.FISH_CONTENT.value}
+            await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info('sent fish content data: ' + msg.body))
+            await asyncio.sleep(2)
 
     def __init__(self, username: str, password: str, host: str):
         super().__init__(username, password, host)

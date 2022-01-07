@@ -57,7 +57,7 @@ def main(n_fisheries: int):
         data_accumulator_agent.subscribe_to(
             [water_monitoring_agent, fish_content_monitoring_agent, weather_monitoring_agent, crowd_monitoring_agent])
 
-    agents.extend([data_accumulator_agent, user_agent, fishery_recommender_agent, client_reporter_agent])
+    agents.extend([user_agent, fishery_recommender_agent, data_accumulator_agent, client_reporter_agent])
 
     port = 10001
     for agent in agents:

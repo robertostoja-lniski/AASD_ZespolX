@@ -32,18 +32,3 @@ class Weather:
         self.precipitation_rate = float(random.uniform(0, 100))
         self.wind_speed = float(random.uniform(0, 120))
         self.cloudiness = float(random.uniform(0, 100))
-
-    def toJSON(self):
-        return json.dumps(self.__dict__)
-
-    @staticmethod
-    def deserialize(json_str: str):
-        obj = json.loads(json_str)
-        weather = Weather()
-
-        weather.temperature = obj['temperature']
-        weather.pressure = obj['pressure']
-        weather.precipitation_rate = obj['precipitation_rate']
-        weather.wind_speed = obj['wind_speed']
-        weather.cloudiness = obj['cloudiness']
-        return weather

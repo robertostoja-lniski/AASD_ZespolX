@@ -16,18 +16,14 @@ class CrowdMonitoring(BaseAgent):
 
         async def run(self):
             await super().run()
-            contacts = self.agent.presence.get_contacts()
-            for contact in contacts:
-                if contacts[contact]['subscription'] == 'from':
-                    msg = Message(to=str(contact))
-                    msg.body = json.dumps({
-                        "fishery": self.agent.fishery.name,
-                        "data": str(self.generator.next())
-                    })
-                    msg.metadata = {"type": DataType.CROWD.value}
-                    await self.send(msg)
-                    self.agent.logger.info('sent crowd data: ' + msg.body)
-                    await asyncio.sleep(2)
+            msg = Message()
+            msg.body = json.dumps({
+                "fishery": self.agent.fishery.name,
+                "data": str(self.generator.next())
+            })
+            msg.metadata = {"type": DataType.CROWD.value}
+            await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info('sent crowd data: ' + msg.body))
+            await asyncio.sleep(2)
 
     def __init__(self, username: str, password: str, host: str):
         super().__init__(username, password, host)
