@@ -2,7 +2,6 @@ import asyncio
 import json
 
 import jsonpickle as jsonpickle
-from spade.behaviour import CyclicBehaviour
 from spade.message import Message
 
 from src.agents.base_agent import BaseAgent

@@ -1,12 +1,8 @@
 import asyncio
-import json
-from datetime import datetime
 
 import keyboard
-from spade.behaviour import CyclicBehaviour, PeriodicBehaviour
 from spade.message import Message
 
-from src import spec
 from src.agents.base_agent import BaseAgent
 from src.spec import DataType
 
@@ -31,7 +27,7 @@ class User(BaseAgent):
                 await asyncio.sleep(1)
                 # send message to client reporter and print report
 
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.5)
 
     def __init__(self, username: str, password: str, host: str):
         super().__init__(username, password, host)

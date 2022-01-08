@@ -14,6 +14,7 @@ class BaseAgent(Agent):
 
     class BaseAgentBehaviour(CyclicBehaviour):
         async def run(self):
+            # in case other agents subscribed too late
             contacts = self.agent.presence.get_contacts()
             for agent in self.agent.agents_to_subscribe:
                 if agent.jid not in contacts.keys():

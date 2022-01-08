@@ -3,7 +3,6 @@ import json
 from enum import Enum
 
 import jsonpickle
-from spade.behaviour import CyclicBehaviour
 from spade.message import Message
 from spade.template import Template
 
