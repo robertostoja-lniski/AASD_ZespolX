@@ -17,3 +17,4 @@ prosodyctl register data_accumulator localhost 1qaz@WSX ;
 prosodyctl register fishery_recommender localhost 1qaz@WSX ;
 prosodyctl register client_reporter localhost 1qaz@WSX ;
 prosodyctl register user localhost 1qaz@WSX ;
+prosodyctl register basic_receive_agent localhost 1qaz@WSX ;

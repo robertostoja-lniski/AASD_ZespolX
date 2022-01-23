@@ -24,6 +24,12 @@ When the program is running you can press one of the following keys:
 * f - generate recommendation. Recommendation will appear as a new file at <cwd>/recommendations/<user_JID> almost instantly.
 * r - generate report
 
+## Tests
+To run unit tests, run the following in the root folder:
+```
+python -m unittest discover -s test -t .
+```
+
 ## About
 
 prosody/accounts.sh - Contains xmpp account registrations for agents. If you want to create new agent you have to specify account for it in this file and run it from container again.
