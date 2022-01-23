@@ -10,7 +10,7 @@ from spade.template import Template
 from src.agents.base_agent import BaseAgent
 from src.generators.FishContentGenerator import FishContentGenerator
 from src.generators.WaterQualityGenerator import WaterQuality
-from src.spec import DataType
+from src.spec import DataType, MessageMetadata, MSG_LANGUAGE, Perfomatives, ONTOLOGY
 
 
 class FishContentMonitoring(BaseAgent):
@@ -43,7 +43,12 @@ class FishContentMonitoring(BaseAgent):
                     "fish_content_rating": fish_content_rating.value
                 })
             })
-            msg.metadata = {"type": DataType.FISH_CONTENT.value}
+            msg.metadata = {
+                    MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+                    MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                    MessageMetadata.TYPE.value: DataType.FISH_CONTENT.value,
+                    MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+                }
             await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info('sent fish content data: ' + msg.body))
             await asyncio.sleep(2)
 
@@ -53,7 +58,12 @@ class FishContentMonitoring(BaseAgent):
 
     async def setup(self):
         template = Template()
-        template.metadata = {"type": DataType.WATER_QUALITY.value}
+        template.metadata = {
+                    MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+                    MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                    MessageMetadata.TYPE.value: DataType.WATER_QUALITY.value,
+                    MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+                }
         self.add_behaviour(self.behaviour, template=template)
         await super().setup()
 

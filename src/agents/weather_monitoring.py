@@ -6,7 +6,7 @@ from spade.message import Message
 
 from src.agents.base_agent import BaseAgent
 from src.generators.WeatherGenerator import WeatherGenerator
-from src.spec import DataType
+from src.spec import DataType, MSG_LANGUAGE, Perfomatives, ONTOLOGY, MessageMetadata
 
 
 class WeatherMonitoring(BaseAgent):
@@ -23,7 +23,12 @@ class WeatherMonitoring(BaseAgent):
                 "fishery": self.agent.fishery.name,
                 "data": jsonpickle.encode(weather)
             })
-            msg.metadata = {"type": DataType.WEATHER.value}
+            msg.metadata = {
+                MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+                MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                MessageMetadata.TYPE.value: DataType.WEATHER.value,
+                MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+            }
             await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info('sent weather data: ' + msg.body))
             await asyncio.sleep(2)
 

@@ -4,11 +4,7 @@ import keyboard
 from spade.message import Message
 
 from src.agents.base_agent import BaseAgent
-from src.spec import DataType
-
-
-def quit_spade():
-    pass
+from src.spec import DataType, MessageMetadata, MSG_LANGUAGE, Perfomatives, ONTOLOGY
 
 
 class User(BaseAgent):
@@ -18,7 +14,12 @@ class User(BaseAgent):
             if keyboard.is_pressed('f'):
                 self.agent.logger.info('f key has been pressed, generating recommendation')
                 msg = Message()
-                msg.metadata = {"type": DataType.RECOMMENDATION_REQUEST.value}
+                msg.metadata = {
+                    MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+                    MessageMetadata.PERFOMATIVE.value: Perfomatives.REQUEST.value,
+                    MessageMetadata.TYPE.value: DataType.RECOMMENDATION_REQUEST.value,
+                    MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+                }
                 await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info(
                     'sent recommendation request to ' + str(contact)))
 

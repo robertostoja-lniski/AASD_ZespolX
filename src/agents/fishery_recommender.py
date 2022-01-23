@@ -11,7 +11,7 @@ from src.agents.base_agent import BaseAgent
 from src.generators.WaterQualityGenerator import MAX_WATER_TEMPERATURE
 from src.generators.WeatherGenerator import MIN_TEMPERATURE, MAX_TEMPERATURE, MIN_PRESSURE, MAX_PRESSURE, \
     MAX_PRECIPITATION, MAX_WIND_SPEED, MAX_CLOUDINESS
-from src.spec import DataType
+from src.spec import DataType, Perfomatives, ONTOLOGY, MessageMetadata, MSG_LANGUAGE
 
 
 class FisheryRecommender(BaseAgent):
@@ -27,7 +27,12 @@ class FisheryRecommender(BaseAgent):
                 self.agent.recommendation_requests_queue.add(msg.sender)
                 if not self.agent.data_request_sent:
                     msg = Message()
-                    msg.metadata = {"type": DataType.DATA_REQUEST.value}
+                    msg.metadata = {
+                        MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+                        MessageMetadata.PERFOMATIVE.value: Perfomatives.REQUEST.value,
+                        MessageMetadata.TYPE.value: DataType.DATA_REQUEST.value,
+                        MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+                    }
                     await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info(
                         'sent data request to ' + str(contact)))
                     self.agent.data_request_sent = True
@@ -56,10 +61,20 @@ class FisheryRecommender(BaseAgent):
 
     async def setup(self):
         template = Template()
-        template.metadata = {"type": DataType.RECOMMENDATION_REQUEST.value}
+        template.metadata = {
+            MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+            MessageMetadata.PERFOMATIVE.value: Perfomatives.REQUEST.value,
+            MessageMetadata.TYPE.value: DataType.RECOMMENDATION_REQUEST.value,
+            MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+        }
         self.add_behaviour(self.recommendation_request_behaviour, template=template)
         template = Template()
-        template.metadata = {"type": DataType.DATA_RESPONSE.value}
+        template.metadata = {
+            MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.TYPE.value: DataType.DATA_RESPONSE.value,
+            MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+        }
         self.add_behaviour(self.data_response_behaviour, template=template)
         await super().setup()
 
@@ -77,15 +92,18 @@ class FisheryRecommender(BaseAgent):
             water_contamination_score = (100 - data[fishery][DataType.WATER_QUALITY.value].contamination_level) / 100
             water_oxygen_level_score = (100 - data[fishery][DataType.WATER_QUALITY.value].oxygen_level) / 100
             water_temperature = data[fishery][DataType.WATER_QUALITY.value].temperature
-            water_temperature_score = 0 if water_temperature < 4 else (water_temperature - 4) / (15 - 4) if water_temperature < 15 \
+            water_temperature_score = 0 if water_temperature < 4 else (water_temperature - 4) / (
+                        15 - 4) if water_temperature < 15 \
                 else (MAX_WATER_TEMPERATURE - water_temperature) / (MAX_WATER_TEMPERATURE - 15)
 
             water_quality_score = (water_temperature_score + water_contamination_score + water_oxygen_level_score) / 3
 
             weather_data = data[fishery][DataType.WEATHER.value]
-            temperature_score = (weather_data.temperature - MIN_TEMPERATURE) / (20 - MIN_TEMPERATURE) if weather_data.temperature <= 20 \
+            temperature_score = (weather_data.temperature - MIN_TEMPERATURE) / (
+                        20 - MIN_TEMPERATURE) if weather_data.temperature <= 20 \
                 else (MAX_TEMPERATURE - weather_data.temperature) / (MAX_TEMPERATURE - 20)
-            pressure_score = (weather_data.pressure - MIN_PRESSURE) / (1000. - MIN_PRESSURE) if weather_data.pressure <= 1000. \
+            pressure_score = (weather_data.pressure - MIN_PRESSURE) / (
+                        1000. - MIN_PRESSURE) if weather_data.pressure <= 1000. \
                 else (MAX_PRESSURE - weather_data.pressure) / (MAX_PRESSURE - 1000.)
             precipitation_score = (MAX_PRECIPITATION - weather_data.precipitation_rate) / MAX_PRECIPITATION
             wind_speed_score = (MAX_WIND_SPEED - weather_data.wind_speed) / MAX_WIND_SPEED
@@ -125,7 +143,8 @@ Wind speed: {"{:.1f}".format(fishery_data[DataType.WEATHER.value].wind_speed)}km
 Clouds: {int(fishery_data[DataType.WEATHER.value].cloudiness)}%"""
         reports_dir = os.path.join('recommendations', str(user))
         os.makedirs(reports_dir, exist_ok=True)
-        report_file = os.path.join(reports_dir, f"recommendation_{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.txt")
+        report_file = os.path.join(reports_dir,
+                                   f"recommendation_{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.txt")
         f = open(report_file, 'x', encoding='utf8')
         f.write(txt)
         f.close()

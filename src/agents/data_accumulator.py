@@ -5,7 +5,7 @@ from spade.message import Message
 from spade.template import Template
 
 from src.agents.base_agent import BaseAgent
-from src.spec import DataType
+from src.spec import DataType, MessageMetadata, ONTOLOGY, Perfomatives, MSG_LANGUAGE
 
 
 class DataAccumulator(BaseAgent):
@@ -20,7 +20,7 @@ class DataAccumulator(BaseAgent):
                 sender = str(msg.sender)
                 body = json.loads(msg.body)
                 data = body['data']
-                type = DataType.WATER_QUALITY.value
+                type = msg.metadata['type']
                 fishery = body['fishery']
                 self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
                 if fishery not in self.agent.data.keys():
@@ -39,7 +39,7 @@ class DataAccumulator(BaseAgent):
                 sender = str(msg.sender)
                 body = json.loads(msg.body)
                 data = body['data']
-                type = DataType.WEATHER.value
+                type = msg.metadata['type']
                 fishery = body['fishery']
                 self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
                 if fishery not in self.agent.data.keys():
@@ -58,7 +58,7 @@ class DataAccumulator(BaseAgent):
                 sender = str(msg.sender)
                 body = json.loads(msg.body)
                 data = body['data']
-                type = DataType.CROWD.value
+                type = msg.metadata['type']
                 fishery = body['fishery']
                 self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
                 if fishery not in self.agent.data.keys():
@@ -77,7 +77,7 @@ class DataAccumulator(BaseAgent):
                 sender = str(msg.sender)
                 body = json.loads(msg.body)
                 data = body['data']
-                type = DataType.FISH_CONTENT.value
+                type = msg.metadata['type']
                 fishery = body['fishery']
                 self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
                 if fishery not in self.agent.data.keys():
@@ -99,10 +99,21 @@ class DataAccumulator(BaseAgent):
                 data = jsonpickle.encode(self.agent.data)
 
                 msg = Message(to=sender)
+                msg.metadata = {
+                    MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+                    MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                    MessageMetadata.TYPE.value: DataType.RECOMMENDATION_RESPONSE.value,
+                    MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+                }
                 msg.body = json.dumps({
                     "data": data
                 })
-                msg.metadata = {"type": DataType.DATA_RESPONSE.value}
+                msg.metadata = {
+                    MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+                    MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                    MessageMetadata.TYPE.value: DataType.DATA_RESPONSE.value,
+                    MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+                }
                 await self.send(msg)
 
     def __init__(self, username: str, password: str, host: str):
@@ -116,24 +127,47 @@ class DataAccumulator(BaseAgent):
 
     async def setup(self):
         template = Template()
-        template.metadata = {"type": DataType.WATER_QUALITY.value}
+        template.metadata = {
+            MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.TYPE.value: DataType.WATER_QUALITY.value,
+            MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+        }
         self.add_behaviour(self.receive_water_quality_behaviour, template=template)
 
         template = Template()
-        template.metadata = {"type": DataType.WEATHER.value}
+        template.metadata = {
+            MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.TYPE.value: DataType.WEATHER.value,
+            MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+        }
         self.add_behaviour(self.receive_weather_behaviour, template=template)
 
         template = Template()
-        template.metadata = {"type": DataType.CROWD.value}
+        template.metadata = {
+            MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.TYPE.value: DataType.CROWD.value,
+            MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+        }
         self.add_behaviour(self.receive_crowd_behaviour, template=template)
 
         template = Template()
-        template.metadata = {"type": DataType.FISH_CONTENT.value}
+        template.metadata = {
+            MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.TYPE.value: DataType.FISH_CONTENT.value,
+            MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+        }
         self.add_behaviour(self.receive_fish_content_behaviour, template=template)
 
         template = Template()
-        template.metadata = {"type": DataType.DATA_REQUEST.value}
+        template.metadata = {
+            MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+            MessageMetadata.PERFOMATIVE.value: Perfomatives.REQUEST.value,
+            MessageMetadata.TYPE.value: DataType.DATA_REQUEST.value,
+            MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+        }
         self.add_behaviour(self.handle_data_request_behaviour, template=template)
         await super().setup()
-
-

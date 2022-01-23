@@ -28,6 +28,19 @@ weather_monitoring = {
 password = '1qaz@WSX'
 host = "localhost"
 
+ONTOLOGY = 'fishery-system'
+MSG_LANGUAGE = 'JSON'
+
+class MessageMetadata(Enum):
+    ONTOLOGY = 'ontology'
+    LANGUAGE = 'language'
+    PERFOMATIVE = 'perfomative'
+    TYPE = 'type'
+
+
+class Perfomatives(Enum):
+    REQUEST = 'Request'
+    INFORM = 'Inform'
 
 class DataType(Enum):
     CROWD = 'Crowd'

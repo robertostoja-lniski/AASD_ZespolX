@@ -9,7 +9,7 @@ from spade.template import Template
 from src.agents.base_agent import BaseAgent
 from src.generators.WaterQualityGenerator import WaterQualityGenerator, WaterQuality
 from src.generators.WeatherGenerator import Weather
-from src.spec import DataType
+from src.spec import DataType, ONTOLOGY, Perfomatives, MessageMetadata, MSG_LANGUAGE
 
 
 class WaterMonitoring(BaseAgent):
@@ -39,7 +39,12 @@ class WaterMonitoring(BaseAgent):
                 "fishery": self.agent.fishery.name,
                 "data": jsonpickle.encode(water_quality)
             })
-            msg.metadata = {"type": DataType.WATER_QUALITY.value}
+            msg.metadata = {
+                MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+                MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                MessageMetadata.TYPE.value: DataType.WATER_QUALITY.value,
+                MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+            }
             await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info(
                 'sent water quality data: ' + msg.body))
             await asyncio.sleep(2)
@@ -52,7 +57,12 @@ class WaterMonitoring(BaseAgent):
 
     async def setup(self):
         template = Template()
-        template.metadata = {"type": DataType.WEATHER.value}
+        template.metadata = {
+            MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.TYPE.value: DataType.WEATHER.value,
+            MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+        }
         self.add_behaviour(self.behaviour, template=template)
         await super().setup()
 

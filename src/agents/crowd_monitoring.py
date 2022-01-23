@@ -5,7 +5,7 @@ from spade.message import Message
 
 from src.agents.base_agent import BaseAgent
 from src.generators.CrowdGenerator import CrowdGenerator
-from src.spec import DataType
+from src.spec import DataType, ONTOLOGY, Perfomatives, MSG_LANGUAGE, MessageMetadata
 
 
 class CrowdMonitoring(BaseAgent):
@@ -17,11 +17,16 @@ class CrowdMonitoring(BaseAgent):
         async def run(self):
             await super().run()
             msg = Message()
+            msg.metadata = {
+                MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+                MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                MessageMetadata.TYPE.value: DataType.CROWD.value,
+                MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+            }
             msg.body = json.dumps({
                 "fishery": self.agent.fishery.name,
                 "data": str(self.generator.next())
             })
-            msg.metadata = {"type": DataType.CROWD.value}
             await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info('sent crowd data: ' + msg.body))
             await asyncio.sleep(2)
 
