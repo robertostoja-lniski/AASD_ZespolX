@@ -1,6 +1,5 @@
 import asyncio
 import time
-import unittest
 
 import aiounittest
 from aioxmpp import PresenceShow
@@ -39,7 +38,7 @@ class TestCrowdMonitoring(aiounittest.AsyncTestCase):
         template = Template()
         template.metadata = {
             MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
             MessageMetadata.TYPE.value: DataType.CROWD.value,
             MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
         }

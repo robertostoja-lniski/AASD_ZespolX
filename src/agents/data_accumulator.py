@@ -101,7 +101,7 @@ class DataAccumulator(BaseAgent):
                 msg = Message(to=sender)
                 msg.metadata = {
                     MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-                    MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                    MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
                     MessageMetadata.TYPE.value: DataType.RECOMMENDATION_RESPONSE.value,
                     MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
                 }
@@ -110,7 +110,7 @@ class DataAccumulator(BaseAgent):
                 })
                 msg.metadata = {
                     MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-                    MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                    MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
                     MessageMetadata.TYPE.value: DataType.DATA_RESPONSE.value,
                     MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
                 }
@@ -129,7 +129,7 @@ class DataAccumulator(BaseAgent):
         template = Template()
         template.metadata = {
             MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
             MessageMetadata.TYPE.value: DataType.WATER_QUALITY.value,
             MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
         }
@@ -138,7 +138,7 @@ class DataAccumulator(BaseAgent):
         template = Template()
         template.metadata = {
             MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
             MessageMetadata.TYPE.value: DataType.WEATHER.value,
             MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
         }
@@ -147,7 +147,7 @@ class DataAccumulator(BaseAgent):
         template = Template()
         template.metadata = {
             MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
             MessageMetadata.TYPE.value: DataType.CROWD.value,
             MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
         }
@@ -156,7 +156,7 @@ class DataAccumulator(BaseAgent):
         template = Template()
         template.metadata = {
             MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
             MessageMetadata.TYPE.value: DataType.FISH_CONTENT.value,
             MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
         }
@@ -165,7 +165,7 @@ class DataAccumulator(BaseAgent):
         template = Template()
         template.metadata = {
             MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-            MessageMetadata.PERFOMATIVE.value: Perfomatives.REQUEST.value,
+            MessageMetadata.PERFORMATIVE.value: Perfomatives.REQUEST.value,
             MessageMetadata.TYPE.value: DataType.DATA_REQUEST.value,
             MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
         }

@@ -45,7 +45,7 @@ class FishContentMonitoring(BaseAgent):
             })
             msg.metadata = {
                     MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-                    MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                    MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
                     MessageMetadata.TYPE.value: DataType.FISH_CONTENT.value,
                     MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
                 }
@@ -60,7 +60,7 @@ class FishContentMonitoring(BaseAgent):
         template = Template()
         template.metadata = {
                     MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-                    MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                    MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
                     MessageMetadata.TYPE.value: DataType.WATER_QUALITY.value,
                     MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
                 }

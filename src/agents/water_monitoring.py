@@ -41,7 +41,7 @@ class WaterMonitoring(BaseAgent):
             })
             msg.metadata = {
                 MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-                MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
                 MessageMetadata.TYPE.value: DataType.WATER_QUALITY.value,
                 MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
             }
@@ -59,7 +59,7 @@ class WaterMonitoring(BaseAgent):
         template = Template()
         template.metadata = {
             MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
             MessageMetadata.TYPE.value: DataType.WEATHER.value,
             MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
         }

@@ -16,7 +16,7 @@ class User(BaseAgent):
                 msg = Message()
                 msg.metadata = {
                     MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-                    MessageMetadata.PERFOMATIVE.value: Perfomatives.REQUEST.value,
+                    MessageMetadata.PERFORMATIVE.value: Perfomatives.REQUEST.value,
                     MessageMetadata.TYPE.value: DataType.RECOMMENDATION_REQUEST.value,
                     MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
                 }

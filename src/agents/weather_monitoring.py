@@ -25,7 +25,7 @@ class WeatherMonitoring(BaseAgent):
             })
             msg.metadata = {
                 MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-                MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+                MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
                 MessageMetadata.TYPE.value: DataType.WEATHER.value,
                 MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
             }

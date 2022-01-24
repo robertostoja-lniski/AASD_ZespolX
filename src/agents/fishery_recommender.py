@@ -29,7 +29,7 @@ class FisheryRecommender(BaseAgent):
                     msg = Message()
                     msg.metadata = {
                         MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-                        MessageMetadata.PERFOMATIVE.value: Perfomatives.REQUEST.value,
+                        MessageMetadata.PERFORMATIVE.value: Perfomatives.REQUEST.value,
                         MessageMetadata.TYPE.value: DataType.DATA_REQUEST.value,
                         MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
                     }
@@ -63,7 +63,7 @@ class FisheryRecommender(BaseAgent):
         template = Template()
         template.metadata = {
             MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-            MessageMetadata.PERFOMATIVE.value: Perfomatives.REQUEST.value,
+            MessageMetadata.PERFORMATIVE.value: Perfomatives.REQUEST.value,
             MessageMetadata.TYPE.value: DataType.RECOMMENDATION_REQUEST.value,
             MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
         }
@@ -71,7 +71,7 @@ class FisheryRecommender(BaseAgent):
         template = Template()
         template.metadata = {
             MessageMetadata.ONTOLOGY.value: ONTOLOGY,
-            MessageMetadata.PERFOMATIVE.value: Perfomatives.INFORM.value,
+            MessageMetadata.PERFORMATIVE.value: Perfomatives.INFORM.value,
             MessageMetadata.TYPE.value: DataType.DATA_RESPONSE.value,
             MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
         }
@@ -129,12 +129,12 @@ class FisheryRecommender(BaseAgent):
         score = recommendation[1]
         fishery_data = data[fishery]
         txt = f"""Best fishery: {fishery}
-Overall score: {score} out of max 4
+Overall score: {"{:.1f}".format(score)} out of max 4
 Crowd at the fishery: {fishery_data[DataType.CROWD.value]} persons
 Fish content: {fishery_data[DataType.FISH_CONTENT.value]['fish_content']}
 Fish content rating: {FishContentMonitoring.FishContentRating(fishery_data[DataType.FISH_CONTENT.value]['fish_content_rating']).name}
-Water contamination level: {fishery_data[DataType.WATER_QUALITY.value].contamination_level * 100}%
-Water oxygen level: {fishery_data[DataType.WATER_QUALITY.value].oxygen_level * 100}%
+Water contamination level: {"{:.1f}".format(fishery_data[DataType.WATER_QUALITY.value].contamination_level * 100)}%
+Water oxygen level: {"{:.1f}".format(fishery_data[DataType.WATER_QUALITY.value].oxygen_level * 100)}%
 Water temperature: {"{:.1f}".format(fishery_data[DataType.WATER_QUALITY.value].temperature)}°C
 Air temperature: {"{:.1f}".format(fishery_data[DataType.WEATHER.value].temperature)}°C
 Precipitation: {"{:.1f}".format(fishery_data[DataType.WEATHER.value].precipitation_rate)}mm/h

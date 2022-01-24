@@ -34,7 +34,7 @@ MSG_LANGUAGE = 'JSON'
 class MessageMetadata(Enum):
     ONTOLOGY = 'ontology'
     LANGUAGE = 'language'
-    PERFOMATIVE = 'perfomative'
+    PERFORMATIVE = 'performative'
     TYPE = 'type'
 
 
