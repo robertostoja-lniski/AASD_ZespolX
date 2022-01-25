@@ -20,7 +20,7 @@ class TestWeatherMonitoring(aiounittest.AsyncTestCase):
     @classmethod
     def setUpClass(cls):
         fishery = Fishery('sample_fishery')
-        cls.weather_monitoring_agent = WeatherMonitoring("weather_monitoring_0", spec.password, spec.host)
+        cls.weather_monitoring_agent = WeatherMonitoring(f"{spec.weather_monitoring['username']}_0", spec.password, spec.host)
         cls.weather_monitoring_agent.set_fishery(fishery)
         cls.weather_monitoring_agent.start()
 

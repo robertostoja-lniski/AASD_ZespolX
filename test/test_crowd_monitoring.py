@@ -19,7 +19,7 @@ class TestCrowdMonitoring(aiounittest.AsyncTestCase):
     @classmethod
     def setUpClass(cls):
         cls.fishery = Fishery('sample_fishery')
-        cls.crowd_monitoring_agent = CrowdMonitoring("crowd_monitoring_0", spec.password, spec.host)
+        cls.crowd_monitoring_agent = CrowdMonitoring(f"{spec.crowd_monitoring['username']}_0", spec.password, spec.host)
         cls.crowd_monitoring_agent.set_fishery(cls.fishery)
         cls.crowd_monitoring_agent.start()
 

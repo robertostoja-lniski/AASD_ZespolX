@@ -22,10 +22,10 @@ class TestWaterQualityMonitoring(aiounittest.AsyncTestCase):
     @classmethod
     def setUpClass(cls):
         fishery = Fishery('sample_fishery')
-        cls.water_quality_monitoring_agent = WaterMonitoring("water_monitoring_0", spec.password, spec.host)
+        cls.water_quality_monitoring_agent = WaterMonitoring(f"{spec.water_monitoring['username']}_0", spec.password, spec.host)
         cls.water_quality_monitoring_agent.set_fishery(fishery)
 
-        cls.weather_monitoring_agent = WeatherMonitoring("weather_monitoring_0", spec.password, spec.host)
+        cls.weather_monitoring_agent = WeatherMonitoring(f"{spec.weather_monitoring['username']}_0", spec.password, spec.host)
         cls.weather_monitoring_agent.set_fishery(fishery)
 
         cls.water_quality_monitoring_agent.subscribe_to([cls.weather_monitoring_agent])

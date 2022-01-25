@@ -18,26 +18,26 @@ from test.util import get_messages_to
 
 class TestFishContentMonitoring(aiounittest.AsyncTestCase):
     fish_content_monitoring_agent = ...
-    water_quality_data_agent = ...
+    water_quality_monitoring_agent = ...
 
     @classmethod
     def setUpClass(cls):
         fishery = Fishery('sample_fishery')
-        cls.fish_content_monitoring_agent = FishContentMonitoring("fish_content_monitoring_0", spec.password, spec.host)
+        cls.fish_content_monitoring_agent = FishContentMonitoring(f"{spec.fish_content_monitoring['username']}_0", spec.password, spec.host)
         cls.fish_content_monitoring_agent.set_fishery(fishery)
 
-        cls.water_quality_data_agent = WaterMonitoring("water_monitoring_0", spec.password, spec.host)
-        cls.water_quality_data_agent.set_fishery(fishery)
+        cls.water_quality_monitoring_agent = WaterMonitoring(f"{spec.water_monitoring['username']}_0", spec.password, spec.host)
+        cls.water_quality_monitoring_agent.set_fishery(fishery)
 
-        cls.fish_content_monitoring_agent.subscribe_to([cls.water_quality_data_agent])
+        cls.fish_content_monitoring_agent.subscribe_to([cls.water_quality_monitoring_agent])
 
         cls.fish_content_monitoring_agent.start()
-        cls.water_quality_data_agent.start()
+        cls.water_quality_monitoring_agent.start()
 
     @classmethod
     def tearDownClass(cls):
         cls.fish_content_monitoring_agent.stop()
-        cls.water_quality_data_agent.stop()
+        cls.water_quality_monitoring_agent.stop()
 
     async def test_should_send_message_in_timeout(self):
         # Cannot initialize it in setUp, because the tests are run simultanously and the reference to the agent is lost
