@@ -13,14 +13,12 @@ class BasicReceiveMessageAgent(BaseAgent):
         async def run(self):
             msg = await self.receive(timeout=MESSAGE_TIMEOUT)
             if msg is not None:
-                self.agent.received_message = msg
-            self.agent.presence.set_unavailable()
+                self.agent.logger.info("Received message: " + msg.body + " from " + str(msg.sender))
             await self.agent.stop()
 
     def __init__(self, username: str, password: str, host: str):
         super().__init__(username, password, host)
         self.behaviour = self.Behaviour()
-        self.received_message = None
 
     async def setup(self):
         self.add_behaviour(self.behaviour)
