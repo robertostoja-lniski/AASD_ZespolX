@@ -42,12 +42,14 @@ class TestWaterCleansing(aiounittest.AsyncTestCase):
     async def test_should_trigger_cleansing_when_water_quality_is_bad(self):
         basic_receive_agent = BasicReceiveMessageAgent("basic_receive_agent", spec.password, spec.host)
         basic_receive_agent.subscribe_to([TestWaterCleansing.water_quality_monitoring_agent])
-        await asyncio.wrap_future(basic_receive_agent.start())
 
-        TestWaterCleansing.water_quality_monitoring_agent.get_water_quality_rating = MagicMock(return_value=WaterMonitoring.WaterQualityRating.BAD)
+        TestWaterCleansing.water_quality_monitoring_agent.get_water_quality_rating =\
+            MagicMock(return_value=WaterMonitoring.WaterQualityRating.BAD)
 
         with mock.patch.object(TestWaterCleansing.water_quality_monitoring_agent, 'trigger_cleansing',
                                wraps=TestWaterCleansing.water_quality_monitoring_agent.trigger_cleansing) as mocked_setup_cleansing:
+            await asyncio.wrap_future(basic_receive_agent.start())
+
             wait_for = 0
             # wait till water_monitoring sends te data data
             while len(get_messages_to(basic_receive_agent)) == 0 and wait_for < MESSAGE_TIMEOUT:
@@ -56,15 +58,17 @@ class TestWaterCleansing(aiounittest.AsyncTestCase):
             mocked_setup_cleansing.assert_called()
         await asyncio.wrap_future(basic_receive_agent.stop())
 
-    async def test_should_not_trigger_cleansing_when_water_quality_is_bad(self):
+    async def test_should_not_trigger_cleansing_when_water_quality_is_good(self):
         basic_receive_agent = BasicReceiveMessageAgent("basic_receive_agent", spec.password, spec.host)
         basic_receive_agent.subscribe_to([TestWaterCleansing.water_quality_monitoring_agent])
-        await asyncio.wrap_future(basic_receive_agent.start())
 
-        TestWaterCleansing.water_quality_monitoring_agent.get_water_quality_rating = MagicMock(return_value=WaterMonitoring.WaterQualityRating.GOOD)
+        TestWaterCleansing.water_quality_monitoring_agent.get_water_quality_rating = \
+            MagicMock(return_value=WaterMonitoring.WaterQualityRating.GOOD)
 
         with mock.patch.object(TestWaterCleansing.water_quality_monitoring_agent, 'trigger_cleansing',
                                wraps=TestWaterCleansing.water_quality_monitoring_agent.trigger_cleansing) as mocked_setup_cleansing:
+            await asyncio.wrap_future(basic_receive_agent.start())
+
             wait_for = 0
             # wait till water_monitoring sends te data data
             while len(get_messages_to(basic_receive_agent)) == 0 and wait_for < MESSAGE_TIMEOUT:
@@ -72,4 +76,3 @@ class TestWaterCleansing(aiounittest.AsyncTestCase):
                 wait_for += 1
             mocked_setup_cleansing.assert_not_called()
         await asyncio.wrap_future(basic_receive_agent.stop())
-
