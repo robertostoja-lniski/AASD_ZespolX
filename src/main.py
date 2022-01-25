@@ -31,6 +31,7 @@ def main(n_fisheries: int):
     fishery_recommender_agent.subscribe_to([user_agent, data_accumulator_agent])
     data_accumulator_agent.subscribe_to([fishery_recommender_agent])
     client_reporter_agent.subscribe_to([user_agent, data_accumulator_agent])
+    data_accumulator_agent.subscribe_to([client_reporter_agent])
 
     for fishery_index in range(0, n_fisheries):
         name = ' '.join(coolname.generate(2))

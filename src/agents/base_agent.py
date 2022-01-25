@@ -62,3 +62,6 @@ class BaseAgent(Agent):
 
     def set_fishery(self, fishery: Fishery):
         self.fishery = fishery
+
+    def run(self):
+        pass

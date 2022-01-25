@@ -24,6 +24,16 @@ class User(BaseAgent):
                     'sent recommendation request to ' + str(contact)))
 
             elif keyboard.is_pressed('r'):
+                msg = Message()
+                msg.metadata = {
+                    MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+                    MessageMetadata.PERFORMATIVE.value: Perfomatives.REQUEST.value,
+                    MessageMetadata.TYPE.value: DataType.REPORT_GENERATION_REQUEST.value,
+                    MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
+                }
+                await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info(
+                    'sent recommendation request to ' + str(contact)))
+
                 self.agent.logger.info('r key has been pressed, generating report')
                 await asyncio.sleep(1)
                 # send message to client reporter and print report
