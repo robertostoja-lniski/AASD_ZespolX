@@ -1,6 +1,7 @@
 import asyncio
 import json
 from enum import Enum
+from random import random
 
 import jsonpickle
 from spade.message import Message
@@ -67,16 +68,25 @@ class WaterMonitoring(BaseAgent):
         await super().setup()
 
     def get_water_quality_rating(self, weather: Weather, water_quality: WaterQuality) -> Enum:
-        # TODO
-        return self.WaterQualityRating.BAD
+
+        if water_quality.contamination_level > 0.5:
+            return self.WaterQualityRating.BAD
+
+        if water_quality.contamination_level > 0.4 and weather.pressure > 1020:
+            return self.WaterQualityRating.BAD
+
+        if water_quality.oxygen_level < 0.3:
+            return self.WaterQualityRating.BAD
+
+        return self.WaterQualityRating.GOOD
 
     def trigger_cleansing(self):
-        #TODO
+        self.generator.improve_quality()
         self.logger.info("Triggering water cleansing")
         self.cleansing_running = True
 
     def stop_cleansing(self):
-        #TODO
+        self.generator.decrease_quality()
         self.logger.info("Stopping cleansing")
         self.cleansing_running = False
 
