@@ -1,25 +1,14 @@
 import datetime
 import json
 import os
-from src.io_utils import write_json
-
 from collections import deque
+
 import jsonpickle
-from aioxmpp import JID
 from spade.message import Message
 from spade.template import Template
-from src.agents.fish_content_monitoring import FishContentMonitoring
+
 from src.agents.base_agent import BaseAgent
-from src.generators.WaterQualityGenerator import MAX_WATER_TEMPERATURE
-from src.generators.WeatherGenerator import (
-    MIN_TEMPERATURE,
-    MAX_TEMPERATURE,
-    MIN_PRESSURE,
-    MAX_PRESSURE,
-    MAX_PRECIPITATION,
-    MAX_WIND_SPEED,
-    MAX_CLOUDINESS,
-)
+from src.io_utils import write_json
 from src.spec import DataType, Perfomatives, ONTOLOGY, MessageMetadata, MSG_LANGUAGE
 
 
@@ -87,6 +76,7 @@ class ClientReporter(BaseAgent):
                     'fish_content': data['Fish content']['fish_content'],
                     'fish_content_rating': data['Fish content']['fish_content_rating'],
                 },
+                'crowd': data["Crowd"]
             }
 
         @staticmethod
