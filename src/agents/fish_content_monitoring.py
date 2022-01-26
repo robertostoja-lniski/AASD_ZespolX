@@ -68,7 +68,19 @@ class FishContentMonitoring(BaseAgent):
         await super().setup()
 
     def get_fish_content_rating(self, water_quality: WaterQuality, fish_content: int) -> Enum:
-        #TODO
+
+        if fish_content < 30 and water_quality.temperature > 10:
+            return self.FishContentRating.VERY_LOW
+
+        if fish_content < 30 and water_quality.temperature < 10:
+            return self.FishContentRating.LOW
+
+        if 30 <= fish_content <= 50:
+            return self.FishContentRating.AVERAGE
+
+        if fish_content >= 1000:
+            return self.FishContentRating.VERY_HIGH
+
         return self.FishContentRating(random.choice([e.value for e in FishContentMonitoring.FishContentRating]))
 
     class FishContentRating(Enum):
