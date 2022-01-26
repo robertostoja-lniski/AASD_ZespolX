@@ -23,7 +23,8 @@ class User(BaseAgent):
                 await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info(
                     'sent recommendation request to ' + str(contact)))
 
-            elif keyboard.is_pressed('r'):
+            # elif keyboard.is_pressed('r'):
+            else:
                 msg = Message()
                 msg.metadata = {
                     MessageMetadata.ONTOLOGY.value: ONTOLOGY,

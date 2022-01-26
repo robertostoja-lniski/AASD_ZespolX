@@ -38,6 +38,7 @@ class WaterMonitoring(BaseAgent):
             msg = Message()
             msg.body = json.dumps({
                 "fishery": self.agent.fishery.name,
+                "opened": self.agent.fishery.is_opened,
                 "data": jsonpickle.encode(water_quality)
             })
             msg.metadata = {
@@ -81,11 +82,13 @@ class WaterMonitoring(BaseAgent):
         return self.WaterQualityRating.GOOD
 
     def trigger_cleansing(self):
+        self.fishery.close()
         self.generator.improve_quality()
         self.logger.info("Triggering water cleansing")
         self.cleansing_running = True
 
     def stop_cleansing(self):
+        self.fishery.open()
         self.generator.decrease_quality()
         self.logger.info("Stopping cleansing")
         self.cleansing_running = False

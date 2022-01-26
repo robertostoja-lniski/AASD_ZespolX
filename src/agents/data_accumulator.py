@@ -22,6 +22,14 @@ class DataAccumulator(BaseAgent):
                 data = body['data']
                 type = msg.metadata['type']
                 fishery = body['fishery']
+
+                is_opened = body['opened']
+                if not is_opened:
+                    self.agent.closed_fisheries.add(fishery)
+
+                if is_opened and fishery in self.agent.closed_fisheries:
+                    self.agent.closed_fisheries.remove(fishery)
+
                 self.agent.logger.info(f"received data: {data} from {sender} for fishery: {fishery}.")
                 if fishery not in self.agent.data.keys():
                     self.agent.data[fishery] = {}
@@ -96,7 +104,11 @@ class DataAccumulator(BaseAgent):
                 sender = str(msg.sender)
                 self.agent.logger.info(f"received data request from {sender}.")
 
-                data = jsonpickle.encode(self.agent.data)
+                opened_fisheries_data = self.agent.data
+                for closed_fishery in self.agent.closed_fisheries:
+                    opened_fisheries_data.pop(closed_fishery)
+
+                data = jsonpickle.encode(opened_fisheries_data)
 
                 msg = Message(to=sender)
                 msg.metadata = {
@@ -124,6 +136,7 @@ class DataAccumulator(BaseAgent):
         self.receive_fish_content_behaviour = self.ReceiveFishContentBehaviour()
         self.handle_data_request_behaviour = self.HandleDataRequestBehaviour()
         self.data = {}
+        self.closed_fisheries = set()
 
     async def setup(self):
         template = Template()
