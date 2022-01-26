@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+from typing import Optional, Tuple
 
 import jsonpickle
 from aioxmpp import JID
@@ -121,26 +122,30 @@ class FisheryRecommender(BaseAgent):
             if best_fishery is None or fishery_scores[fishery] > fishery_scores[best_fishery]:
                 best_fishery = fishery
 
-        return best_fishery, fishery_scores[best_fishery]
+        return (best_fishery, fishery_scores[best_fishery]) if best_fishery else None
 
-    def save_recommendation_for_user(self, user: JID, recommendation: (str, dict), data):
-        self.logger.info("Saving recommendation for user " + str(user))
-        fishery = recommendation[0]
-        score = recommendation[1]
-        fishery_data = data[fishery]
-        txt = f"""Best fishery: {fishery}
-Overall score: {"{:.1f}".format(score)} out of max 4
-Crowd at the fishery: {fishery_data[DataType.CROWD.value]} persons
-Fish content: {fishery_data[DataType.FISH_CONTENT.value]['fish_content']}
-Fish content rating: {FishContentMonitoring.FishContentRating(fishery_data[DataType.FISH_CONTENT.value]['fish_content_rating']).name}
-Water contamination level: {"{:.1f}".format(fishery_data[DataType.WATER_QUALITY.value].contamination_level * 100)}%
-Water oxygen level: {"{:.1f}".format(fishery_data[DataType.WATER_QUALITY.value].oxygen_level * 100)}%
-Water temperature: {"{:.1f}".format(fishery_data[DataType.WATER_QUALITY.value].temperature)}°C
-Air temperature: {"{:.1f}".format(fishery_data[DataType.WEATHER.value].temperature)}°C
-Precipitation: {"{:.1f}".format(fishery_data[DataType.WEATHER.value].precipitation_rate)}mm/h
-Air pressure: {"{:.1f}".format(fishery_data[DataType.WEATHER.value].pressure)}hPa
-Wind speed: {"{:.1f}".format(fishery_data[DataType.WEATHER.value].wind_speed)}km/h
-Clouds: {int(fishery_data[DataType.WEATHER.value].cloudiness)}%"""
+    def save_recommendation_for_user(self, user: JID, recommendation: Optional[Tuple[str, dict]], data):
+        if recommendation:
+            self.logger.info("Saving recommendation for user " + str(user))
+            fishery = recommendation[0]
+            score = recommendation[1]
+            fishery_data = data[fishery]
+            txt = f"""Best fishery: {fishery}
+    Overall score: {"{:.1f}".format(score)} out of max 4
+    Crowd at the fishery: {fishery_data[DataType.CROWD.value]} persons
+    Fish content: {fishery_data[DataType.FISH_CONTENT.value]['fish_content']}
+    Fish content rating: {FishContentMonitoring.FishContentRating(fishery_data[DataType.FISH_CONTENT.value]['fish_content_rating']).name}
+    Water contamination level: {"{:.1f}".format(fishery_data[DataType.WATER_QUALITY.value].contamination_level * 100)}%
+    Water oxygen level: {"{:.1f}".format(fishery_data[DataType.WATER_QUALITY.value].oxygen_level * 100)}%
+    Water temperature: {"{:.1f}".format(fishery_data[DataType.WATER_QUALITY.value].temperature)}°C
+    Air temperature: {"{:.1f}".format(fishery_data[DataType.WEATHER.value].temperature)}°C
+    Precipitation: {"{:.1f}".format(fishery_data[DataType.WEATHER.value].precipitation_rate)}mm/h
+    Air pressure: {"{:.1f}".format(fishery_data[DataType.WEATHER.value].pressure)}hPa
+    Wind speed: {"{:.1f}".format(fishery_data[DataType.WEATHER.value].wind_speed)}km/h
+    Clouds: {int(fishery_data[DataType.WEATHER.value].cloudiness)}%"""
+        else:
+            txt = "No available fisheries at the moment. " \
+                  "Unfortunately all of them are closed due to bad water quality."
         reports_dir = os.path.join('recommendations', str(user))
         os.makedirs(reports_dir, exist_ok=True)
         report_file = os.path.join(reports_dir,
