@@ -2,6 +2,7 @@ import asyncio
 import json
 import random
 from enum import Enum
+from typing import Dict
 
 import jsonpickle
 from spade.message import Message
@@ -67,18 +68,18 @@ class FishContentMonitoring(BaseAgent):
         self.add_behaviour(self.behaviour, template=template)
         await super().setup()
 
-    def get_fish_content_rating(self, water_quality: WaterQuality, fish_content: int) -> Enum:
+    def get_fish_content_rating(self, water_quality: WaterQuality, fish_content: Dict[str, int]) -> Enum:
 
-        if fish_content < 30 and water_quality.temperature > 10:
+        if sum(fish_content.values()) < 30 and water_quality.temperature > 10:
             return self.FishContentRating.VERY_LOW
 
-        if fish_content < 30 and water_quality.temperature < 10:
+        if sum(fish_content.values()) < 30 and water_quality.temperature < 10:
             return self.FishContentRating.LOW
 
-        if 30 <= fish_content <= 50:
+        if 30 <= sum(fish_content.values()) <= 50:
             return self.FishContentRating.AVERAGE
 
-        if fish_content >= 1000:
+        if sum(fish_content.values()) >= 1000:
             return self.FishContentRating.VERY_HIGH
 
         return self.FishContentRating(random.choice([e.value for e in FishContentMonitoring.FishContentRating]))
