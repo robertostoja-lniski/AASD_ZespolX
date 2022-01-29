@@ -22,6 +22,7 @@ def main(n_fisheries: int):
     logger.info(
         'How to use: \n press f - generate fishery recommendation\n press r - generate report\n input q - quit\n')
     logger.info('initializing agents')
+    logger.info('Warnings for a few seconds are expected, they are caused by sequential agent initialization')
 
     data_accumulator_agent = DataAccumulator(spec.data_accumulator['username'], spec.password, spec.host)
     fishery_recommender_agent = FisheryRecommender(spec.fishery_recommender['username'], spec.password, spec.host)

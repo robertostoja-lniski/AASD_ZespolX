@@ -10,7 +10,7 @@ from spade.template import Template
 from src.agents.base_agent import BaseAgent
 from src.io_utils import write_json
 from src.spec import DataType, Perfomatives, ONTOLOGY, MessageMetadata, MSG_LANGUAGE
-
+from src.mas_logging import create_logger
 
 class ClientReporter(BaseAgent):
     class HandleReportGenerationBehaviour(BaseAgent.BaseAgentBehaviour):
@@ -91,7 +91,13 @@ class ClientReporter(BaseAgent):
                 return
 
             fisheries_data = jsonpickle.decode(json.loads(msg.body)['data'])
-            data = self._generate_client_report(fisheries_data)
+
+            try:
+                data = self._generate_client_report(fisheries_data)
+            except KeyError:
+                # if not enough data is provided, report will not be generate
+                return
+
             for requester in self.agent.requests_to_handle:
                 dir_path = os.path.join('reports', str(requester))
                 path = os.path.join(dir_path, f'client_report_{self._get_str_time()}.txt')

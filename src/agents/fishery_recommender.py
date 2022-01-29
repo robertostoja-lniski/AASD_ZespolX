@@ -57,8 +57,18 @@ class FisheryRecommender(BaseAgent):
         super().__init__(username, password, host)
         self.recommendation_request_behaviour = self.HandleRecommendationRequestBehaviour()
         self.data_response_behaviour = self.HandleDataResponseBehaviour()
+        self.report_generation_behaviour = self.HandleReportGenerationBehaviour()
         self.recommendation_requests_queue = set([])
         self.data_request_sent = False
+
+    # Ignore requests for report generattion
+    class HandleReportGenerationBehaviour(BaseAgent.BaseAgentBehaviour):
+        def __init__(self):
+            super().__init__()
+
+        async def run(self):
+            await super().run()
+            return
 
     async def setup(self):
         template = Template()
@@ -77,6 +87,14 @@ class FisheryRecommender(BaseAgent):
             MessageMetadata.LANGUAGE.value: MSG_LANGUAGE
         }
         self.add_behaviour(self.data_response_behaviour, template=template)
+        template = Template()
+        template.metadata = {
+            MessageMetadata.ONTOLOGY.value: ONTOLOGY,
+            MessageMetadata.PERFORMATIVE.value: Perfomatives.REQUEST.value,
+            MessageMetadata.TYPE.value: DataType.REPORT_GENERATION_REQUEST.value,
+            MessageMetadata.LANGUAGE.value: MSG_LANGUAGE,
+        }
+        self.add_behaviour(self.report_generation_behaviour, template=template)
         await super().setup()
 
     def get_recommendation(self, data):
