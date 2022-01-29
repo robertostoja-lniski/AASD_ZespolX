@@ -65,8 +65,8 @@ class User(BaseAgent):
             await asyncio.sleep(2)
             # send message to client reporter and print report
 
-    def __init__(self, username: str, password: str, host: str):
-        super().__init__(username, password, host)
+    def __init__(self, username: str, password: str, host: str, verbose: bool):
+        super().__init__(username, password, host, verbose)
         self.generate_recommendation_behaviour = self.GenerateRecommendationBehaviour()
         self.generate_report_behaviour = self.GenerateReportBehaviour()
 

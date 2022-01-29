@@ -32,7 +32,7 @@ class BaseAgent(Agent):
 
     def __init__(self, username: str, password: str, host: str, verbose=True):
         super().__init__(jid=self.createJID(username, host), password=password)
-        self.logger = create_logger(f"{username} ({self.__class__.__name__})", False)
+        self.logger = create_logger(f"{username} ({self.__class__.__name__})", verbose)
         self.logger.info('initialization')
         self.agents_to_subscribe = set([])
         self.agents_subscribing = set([])

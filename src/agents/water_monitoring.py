@@ -51,8 +51,8 @@ class WaterMonitoring(BaseAgent):
                 'sent water quality data: ' + msg.body))
             await asyncio.sleep(2)
 
-    def __init__(self, username: str, password: str, host: str):
-        super().__init__(username, password, host)
+    def __init__(self, username: str, password: str, host: str, verbose: bool):
+        super().__init__(username, password, host, verbose)
         self.behaviour = self.Behaviour()
         self.cleansing_running = False
 

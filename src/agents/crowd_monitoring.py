@@ -30,8 +30,8 @@ class CrowdMonitoring(BaseAgent):
             await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info('sent crowd data: ' + msg.body))
             await asyncio.sleep(2)
 
-    def __init__(self, username: str, password: str, host: str):
-        super().__init__(username, password, host)
+    def __init__(self, username: str, password: str, host: str, verbose: bool):
+        super().__init__(username, password, host, verbose)
         self.behaviour = self.Behaviour()
 
     async def setup(self):

@@ -125,8 +125,8 @@ class ClientReporter(BaseAgent):
         self.add_behaviour(self.data_response_behaviour, template=template)
         await super().setup()
 
-    def __init__(self, username: str, password: str, host: str):
-        super().__init__(username, password, host)
+    def __init__(self, username: str, password: str, host: str, verbose: bool):
+        super().__init__(username, password, host, verbose)
         self.report_generation_behaviour = self.HandleReportGenerationBehaviour()
         self.data_response_behaviour = self.HandleDataResponseBehaviour()
         self.requests_to_handle = deque()

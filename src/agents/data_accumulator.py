@@ -129,8 +129,8 @@ class DataAccumulator(BaseAgent):
                 }
                 await self.send(msg)
 
-    def __init__(self, username: str, password: str, host: str):
-        super().__init__(username, password, host)
+    def __init__(self, username: str, password: str, host: str, verbose: bool):
+        super().__init__(username, password, host, verbose)
         self.receive_water_quality_behaviour = self.ReceiveWaterQualityBehaviour()
         self.receive_weather_behaviour = self.ReceiveWeatherBehaviour()
         self.receive_crowd_behaviour = self.ReceiveCrowdBehaviour()

@@ -53,8 +53,8 @@ class FisheryRecommender(BaseAgent):
                 self.agent.recommendation_requests_queue = set([])
             self.agent.data_request_sent = False
 
-    def __init__(self, username: str, password: str, host: str):
-        super().__init__(username, password, host)
+    def __init__(self, username: str, password: str, host: str, verbose: bool):
+        super().__init__(username, password, host, verbose)
         self.recommendation_request_behaviour = self.HandleRecommendationRequestBehaviour()
         self.data_response_behaviour = self.HandleDataResponseBehaviour()
         self.report_generation_behaviour = self.HandleReportGenerationBehaviour()
