@@ -53,7 +53,6 @@ class WaterMonitoring(BaseAgent):
 
     def __init__(self, username: str, password: str, host: str):
         super().__init__(username, password, host)
-        self.generator = WaterQualityGenerator()
         self.behaviour = self.Behaviour()
         self.cleansing_running = False
 
@@ -83,20 +82,20 @@ class WaterMonitoring(BaseAgent):
 
     def trigger_cleansing(self):
         self.fishery.close()
-        self.generator.improve_quality()
+        self.behaviour.generator.improve_quality()
         self.logger.info("Triggering water cleansing")
         self.cleansing_running = True
 
     def stop_cleansing(self):
         self.fishery.open()
-        self.generator.decrease_quality()
+        self.behaviour.generator.stop_increasing_quality()
         self.logger.info("Stopping cleansing")
         self.cleansing_running = False
 
     def setup_cleansing(self, water_quality_rating):
-        if water_quality_rating is self.WaterQualityRating.BAD and not self.cleansing_running:
+        if water_quality_rating == self.WaterQualityRating.BAD and not self.cleansing_running:
             self.trigger_cleansing()
-        if water_quality_rating is self.WaterQualityRating.GOOD and self.cleansing_running:
+        if water_quality_rating == self.WaterQualityRating.GOOD and self.cleansing_running:
             self.stop_cleansing()
 
     class WaterQualityRating(Enum):

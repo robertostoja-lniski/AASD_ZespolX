@@ -14,7 +14,7 @@ class WaterQualityGenerator:
         # next generated samples will have lower contamination
         self.quality_improvement_period += int(random.randint(5, 10))
 
-    def decrease_quality(self):
+    def stop_increasing_quality(self):
         self.quality_improvement_period = 0
 
     def next(self):
@@ -29,7 +29,8 @@ class WaterQualityGenerator:
 
             # if lower contamination levels should be returned
             if self.quality_improvement_period > 0:
-                self.water_quality.contamination_level /= int(random.randint(2, 4))
+                self.water_quality.contamination_level /= random.randint(2, 4)
+                self.water_quality.oxygen_level *= 1 + (random.random() / 2)
                 self.quality_improvement_period -= 1
 
         return self.water_quality
