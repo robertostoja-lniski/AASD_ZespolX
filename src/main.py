@@ -18,7 +18,7 @@ from src.mas_logging import create_logger
 
 def main(n_fisheries: int):
     agents = []
-    logger = create_logger('main')
+    logger = create_logger('main', True)
     logger.info(
         'How to use: \n press f - generate fishery recommendation\n press r - generate report\n input q - quit\n')
     logger.info('initializing agents')

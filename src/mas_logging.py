@@ -3,30 +3,35 @@ import os
 import logging
 
 
-def create_logger(name: str):
+def add_stream_logger(logger, log_format: str):
+    c_handler = logging.StreamHandler()
+    c_handler.setLevel(logging.DEBUG)
+    c_format = logging.Formatter(log_format)
+    c_handler.setFormatter(c_format)
+    logger.addHandler(c_handler)
+
+
+def add_file_logger(logger, log_format: str, name: str):
+    f_handler = logging.FileHandler(name)
+    f_handler.setLevel(logging.DEBUG)
+    f_format = logging.Formatter(log_format)
+    f_handler.setFormatter(f_format)
+    logger.addHandler(f_handler)
+
+
+def create_logger(name: str, verbose: bool):
     if not os.path.exists("../logs/"):
         os.makedirs("../logs/")
 
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
-    # Create handlers
-    # c_handler = logging.StreamHandler()
-    f_handler = logging.FileHandler('../logs/' + name + '.log')
-    all_handler = logging.FileHandler('../logs/all.log')
-    # c_handler.setLevel(logging.DEBUG)
-    f_handler.setLevel(logging.DEBUG)
-    all_handler.setLevel(logging.DEBUG)
-    log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    # Create formatters and add it to handlers
-    # c_format = logging.Formatter(log_format)
-    f_format = logging.Formatter(log_format)
-    all_format = logging.Formatter(log_format)
-    # c_handler.setFormatter(c_format)
-    f_handler.setFormatter(f_format)
-    all_handler.setFormatter(f_format)
 
-    # Add handlers to the logger
-    # logger.addHandler(c_handler)
-    logger.addHandler(f_handler)
-    logger.addHandler(all_handler)
+    log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+    if verbose:
+        add_stream_logger(logger, log_format)
+
+    add_file_logger(logger, log_format, '../logs/' + name + '.log')
+    add_file_logger(logger, log_format, '../logs/all.log')
+
     return logger
