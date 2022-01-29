@@ -19,7 +19,6 @@ class TestDataAccumulator(aiounittest.AsyncTestCase):
     def setUpClass(cls):
         cls.fishery = Fishery('sample_fishery')
         cls.data_accumulator_agent = DataAccumulator(f"{spec.data_accumulator['username']}", spec.password, spec.host)
-        cls.data_accumulator_agent.set_fishery(cls.fishery)
         cls.data_accumulator_agent.start()
 
         cls.water_monitoring_agent = WaterMonitoring(f"{spec.water_monitoring['username']}_0",
@@ -29,10 +28,12 @@ class TestDataAccumulator(aiounittest.AsyncTestCase):
         cls.fish_content_monitoring_agent = FishContentMonitoring(f"{spec.fish_content_monitoring['username']}_0",
                                                                   spec.password, spec.host)
         cls.fish_content_monitoring_agent.set_fishery(cls.fishery)
+        cls.fish_content_monitoring_agent.subscribe_to([cls.water_monitoring_agent])
 
         cls.weather_monitoring_agent = WeatherMonitoring(f"{spec.weather_monitoring['username']}_0",
                                                          spec.password, spec.host)
         cls.weather_monitoring_agent.set_fishery(cls.fishery)
+        cls.water_monitoring_agent.subscribe_to([cls.weather_monitoring_agent])
 
         cls.crowd_monitoring_agent = CrowdMonitoring(f"{spec.crowd_monitoring['username']}_0", spec.password, spec.host)
         cls.crowd_monitoring_agent.set_fishery(cls.fishery)
@@ -61,11 +62,11 @@ class TestDataAccumulator(aiounittest.AsyncTestCase):
             wait_for += 1
 
         self.assertTrue(len(get_messages_to_from(TestDataAccumulator.data_accumulator_agent,
-                                                 TestDataAccumulator.weather_monitoring_agent)) > 0)
+                                                 TestDataAccumulator.weather_monitoring_agent)) > 0, "Did not receive any message from weather_monitoring_agent")
 
         self.assertTrue(all([event.metadata['type'] == DataType.WEATHER.value for event in
                              get_messages_to_from(TestDataAccumulator.data_accumulator_agent,
-                                                  TestDataAccumulator.weather_monitoring_agent)]))
+                                                  TestDataAccumulator.weather_monitoring_agent)]), "Message type from weather_monitoring_agent is not correct")
 
     async def test_should_receive_water_data_in_timeout_limit(self):
         wait_for = 0
@@ -75,11 +76,11 @@ class TestDataAccumulator(aiounittest.AsyncTestCase):
             wait_for += 1
 
         self.assertTrue(len(get_messages_to_from(TestDataAccumulator.data_accumulator_agent,
-                                                 TestDataAccumulator.water_monitoring_agent)) > 0)
+                                                 TestDataAccumulator.water_monitoring_agent)) > 0, "Did not receive any message from water_monitoring_agent.")
 
         self.assertTrue(all([event.metadata['type'] == DataType.WATER_QUALITY.value for event in
                              get_messages_to_from(TestDataAccumulator.data_accumulator_agent,
-                                                  TestDataAccumulator.water_monitoring_agent)]))
+                                                  TestDataAccumulator.water_monitoring_agent)]), "Message type from water_monitoring_agent is not correct.")
 
     async def test_should_receive_fish_content_data_in_timeout_limit(self):
         wait_for = 0
@@ -89,11 +90,11 @@ class TestDataAccumulator(aiounittest.AsyncTestCase):
             wait_for += 1
 
         self.assertTrue(len(get_messages_to_from(TestDataAccumulator.data_accumulator_agent,
-                                                 TestDataAccumulator.fish_content_monitoring_agent)) > 0)
+                                                 TestDataAccumulator.fish_content_monitoring_agent)) > 0, "Did not receive any message from fish_content_monitoring_agent.")
 
         self.assertTrue(all([event.metadata['type'] == DataType.FISH_CONTENT.value for event in
                              get_messages_to_from(TestDataAccumulator.data_accumulator_agent,
-                                                  TestDataAccumulator.fish_content_monitoring_agent)]))
+                                                  TestDataAccumulator.fish_content_monitoring_agent)]), "Message type from fish_content_monitoring_agent is not correct.")
 
     async def test_should_receive_crowd_data_in_timeout_limit(self):
         wait_for = 0
@@ -103,8 +104,8 @@ class TestDataAccumulator(aiounittest.AsyncTestCase):
             wait_for += 1
 
         self.assertTrue(len(get_messages_to_from(TestDataAccumulator.data_accumulator_agent,
-                                                 TestDataAccumulator.crowd_monitoring_agent)) > 0)
+                                                 TestDataAccumulator.crowd_monitoring_agent)) > 0, "Did not receive any message from crowd_monitoring_agent.")
 
         self.assertTrue(all([event.metadata['type'] == DataType.CROWD.value for event in
                              get_messages_to_from(TestDataAccumulator.data_accumulator_agent,
-                                                  TestDataAccumulator.crowd_monitoring_agent)]))
+                                                  TestDataAccumulator.crowd_monitoring_agent)]), "Message type from crowd_monitoring_agent is not correct.")

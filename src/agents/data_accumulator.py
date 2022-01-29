@@ -106,7 +106,8 @@ class DataAccumulator(BaseAgent):
 
                 opened_fisheries_data = self.agent.data
                 for closed_fishery in self.agent.closed_fisheries:
-                    opened_fisheries_data.pop(closed_fishery)
+                    if closed_fishery in opened_fisheries_data:
+                        opened_fisheries_data.pop(closed_fishery)
 
                 data = jsonpickle.encode(opened_fisheries_data)
 
