@@ -2,7 +2,6 @@ import asyncio
 import time
 
 import aiounittest
-from aioxmpp import PresenceShow
 from spade.message import Message
 from spade.template import Template
 

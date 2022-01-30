@@ -62,7 +62,7 @@ class User(BaseAgent):
             await self.send_to_all_contacts(msg, lambda contact: self.agent.logger.info(
                 'sent report request to ' + str(contact)))
 
-            await asyncio.sleep(2)
+            await asyncio.sleep(5)
             # send message to client reporter and print report
 
     def __init__(self, username: str, password: str, host: str, verbose: bool):
